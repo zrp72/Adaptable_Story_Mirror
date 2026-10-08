@@ -36,21 +36,18 @@ load_ral(const char* filename, struct RAL* config){
 				*d = 0;
 				if(strncmp(buffer, "STORY_FILE", 10) == 0){
 					d = config->story_file;
-					dz = d;
 
 				} else if(strncmp(buffer, "START_INDEX", 11) == 0){
 					d = config->start_index;
-					dz = d;
 
 				} else if(strncmp(buffer, "ASSET_FOLDER", 12) == 0) {
 					d = config->asset_folder;
-					dz = d;
 
 				} else {
 					fprintf(stderr, "Invalid destination in config file: '%s'\n", buffer);
 					exit(1);
 				}
-
+				dz = d;
 				rs = 2;
 				continue;
 			}
