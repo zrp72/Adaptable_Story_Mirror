@@ -54,6 +54,7 @@ load_ral(const char* filename, struct RAL* config){
 				rs = 2;
 				continue;
 			}
+			break;
 		case 2:
 			if(c == '"'){
 				rs = 3;
@@ -66,6 +67,7 @@ load_ral(const char* filename, struct RAL* config){
 				rs = 1;
 				continue;
 			}
+			break;
 		}
 
 		if((d - dz) >= (sizeof dz - 1)){
