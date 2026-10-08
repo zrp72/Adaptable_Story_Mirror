@@ -67,8 +67,7 @@ load_ral(const char* filename, struct RAL* config){
 			break;
 		}
 
-		/* THIS IS A BUG!!   sizeof dz is *not* correct */
-		if((d - dz) >= (sizeof dz - 1)){
+		if((d - dz) >= (63)){
 			fprintf(stderr, "Config file has either an invalid RAL name or a filename that exceeds the buffer size.");
 			exit(1);
 		} else {
