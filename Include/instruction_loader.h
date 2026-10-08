@@ -3,9 +3,9 @@
 
 struct RAL /* Runtime Access Locations */
 {
-	char[64] story_file;
-	char[64] start_index;
-	char[64] asset_folder;
+	char story_file[64];
+	char start_index[64];
+	char asset_folder[64];
 };
 void load_ral(const char* filename, struct RAL*);
 
