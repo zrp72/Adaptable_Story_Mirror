@@ -12,7 +12,11 @@ int main(int argc, char** argv) {
 	try {
 		std::filesystem::current_path(SDL_GetBasePath());
 		
-		game_data data("start");
+		struct RAL config;
+		char* config_file = argc > 1 ? argv[1] : "READ_DIRECTIONS";
+		load_ral(config_file, &config);
+
+		game_data data(config.start_chapter);
 		data.story.parse_story_file(std::filesystem::path("Story.txt"));
 
 		gui_core gui;

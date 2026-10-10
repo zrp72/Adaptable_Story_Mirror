@@ -4,7 +4,7 @@
 struct RAL /* Runtime Access Locations */
 {
 	char story_file[64];
-	char start_index[64];
+	char start_chapter[64];
 	char asset_folder[64];
 };
 void load_ral(const char* filename, struct RAL*);

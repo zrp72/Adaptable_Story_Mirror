@@ -5,13 +5,6 @@
 
 //#include "instruction_loader.h"
 
-struct RAL /* Runtime Access Locations */
-{
-	char story_file[64];
-	char start_index[64];
-	char asset_folder[64];
-};
-
 void
 load_ral(const char* filename, struct RAL* config){
 	FILE* f = fopen(filename, "r");
@@ -37,8 +30,8 @@ load_ral(const char* filename, struct RAL* config){
 				if(strncmp(buffer, "STORY_FILE", 10) == 0){
 					d = config->story_file;
 
-				} else if(strncmp(buffer, "START_INDEX", 11) == 0){
-					d = config->start_index;
+				} else if(strncmp(buffer, "START_CHAPTER", 13) == 0){
+					d = config->start_chapter;
 
 				} else if(strncmp(buffer, "ASSET_FOLDER", 12) == 0) {
 					d = config->asset_folder;
@@ -76,12 +69,3 @@ load_ral(const char* filename, struct RAL* config){
 	}
 }
 
-int 
-main(void){
-	struct RAL config;
-	load_ral("READ_DIRECTIONS", &config);
-
-	printf("%s\n%s\n%s\n", config.story_file, config.start_index, config.asset_folder);
-
-	return 0;
-}
