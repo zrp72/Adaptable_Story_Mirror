@@ -2,10 +2,8 @@
 #include <string>
 #include <cctype>
 
-#include "functions.h"
-#include "basic_functions.h"
-
-#define debug(x)  std::cout << x
+#include "story_parser.h"
+#include "utils.h"
 
 //Creates a substring from the given position to any of the given ends.
 //End will not be included in returned string.
@@ -145,7 +143,11 @@ styling::remove_marker(std::string marker){
 }
 
 void
-check_for_markers(styling& s, glyph_styling& g, std::string& story, int& c){
+check_for_markers(
+	styling& s, 
+	glyph_styling& g, 
+	std::string& story, int& c
+){
 	for(auto& marker : s.bold_markers){
 		auto pos = story.begin() + c;
 		std::string_view sv(pos, pos + marker.first.length());
@@ -165,8 +167,11 @@ check_for_markers(styling& s, glyph_styling& g, std::string& story, int& c){
 }
 
 void
-set_global_visual(std::string& story, int& c, 
-	glyph_styling& glyph_style, styling& style){
+set_global_visual(
+	std::string& story, int& c, 
+	glyph_styling& glyph_style, 
+	styling& style
+){
 
 	std::string visual = create_substring(story, c, ":", true);
 	std::string filename = create_substring(story, c, "\n", true);
