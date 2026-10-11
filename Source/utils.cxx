@@ -3,7 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#include "basic_functions.h"
+
+#include "utils.h"
 
 int randomize_number(int range){
 	std::random_device random_device;
