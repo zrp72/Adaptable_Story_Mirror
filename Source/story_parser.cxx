@@ -1,9 +1,141 @@
-#include <charconv>
-#include <string>
-#include <cctype>
-
 #include "story_parser.h"
 #include "utils.h"
+
+//NEW CODE
+
+bool
+move_past_char(FILE* file, char target){
+	char c;
+	while(EOF != (c = fgetc(file))){
+		if(c == target){
+			return true;
+		}
+	}
+	return false;
+}
+
+//NOTE: Does not pass an error if the string ends at EOF
+char*
+get_string_tsc(FILE* f, char end){
+	int cap = 8;
+	struct string string = {
+		.text = calloc(cap, sizeof(char)),
+		.cap = cap
+	};
+	char* s = string;
+
+	int c;
+	while(EOF != (c = fgetc(f))){
+		if(c == end){
+			break;
+		
+		if((s - string) >= (cap - 1)){
+			
+			int si = s - string;
+			
+			string = realloc(string, cap *= 2);
+			if(string == NULL){
+				fprintf(stderr, "Out of memory!!!\n");
+				exit(1);
+			}
+
+			s = string + si;
+		
+		}
+		*s++ = c;
+	}
+	*s = '\0';
+	return string;
+}
+
+//NOTE: Does not pass an error if the string ends at EOF
+char*
+get_string_tmc(FILE* f, struct string end){
+	int cap = 8;
+	struct string string = {
+		.text = calloc(cap, sizeof(char)),
+		.cap = cap
+	};
+	char* s = string;
+	
+	//end.len + 1 or end.cap ?
+	char* cache = calloc(end.cap, sizeof(char));
+	int ci = 0;
+
+	int c;
+	while(EOF != (c = fgetc(f))){
+		if(c == end[ci]){
+
+			cache[ci++] = c;
+			if(cache == end){
+				break;
+			}
+
+			continue;
+
+		} else if((cache[ci - 1] == '\n') && isspace(c)){
+			//NOTE: All whitespace after a newline WILL be trimmed.
+			continue;
+
+		} else if(ci > 1){
+			for(int i = 0; cache[i] != '\0'; i++){
+				*s++ = cache[i];
+				cache[i] = '\0';
+			}
+		}
+		
+		if((s - string) >= (cap - 1)){
+			
+			int si = s - string;
+			
+			string = realloc(string, cap *= 2);
+			if(string == NULL){
+				fprintf(stderr, "Out of memory!!!\n");
+				exit(1);
+			}
+
+			s = string + si;
+		
+		}
+		*s++ = c;
+	}
+	*s = '\0';
+	return string;
+}
+
+struct story*
+parse_story_file(const char* filepath, char* start_chapter){
+	FILE* f = fopen(filepath, "r");
+	if(f == NULL){
+		perror(filepath);
+		exit(1);
+	}
+
+	//does this work?
+	struct story = {.story_location = start_chapter};
+
+	struct styling style;
+	struct glyph_styling glyph_style;
+	struct story_vars option_conds;
+
+	int c;
+	char prev;
+	while(EOF != (c = fgetc(f)){
+		if(isspace(c)||c == '_'){
+			continue;
+		}
+
+		switch(c){
+		case '/':
+			move_past_char(f, '\n'))
+			continue;
+		case '\\':
+			char* marker = get_string_tsc(f, '\n');
+	}
+
+}
+
+//OLD CODE:
 
 //Creates a substring from the given position to any of the given ends.
 //End will not be included in returned string.

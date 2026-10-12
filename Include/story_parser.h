@@ -1,5 +1,9 @@
+#include <charconv>
+#include <cctype>
 #include <string>
 #include <unordered_map>
+
+#include "glyphtext.h"
 
 template<typename x, typename y>
 using umap = std::unordered_map<x, y>;
@@ -61,3 +65,5 @@ struct {
 	umap<char*, item> items;
 	character player;
 } game_data;
+
+struct story* parse_story_file(char* filepath);
