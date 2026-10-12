@@ -56,31 +56,26 @@ get_string_tmc(FILE* f, struct string end){
 		.text = calloc(cap, sizeof(char)),
 		.cap = cap
 	};
-	char* s = string;
+	char* s = string.text;
 	
-	//end.len + 1 or end.cap ?
-	char* cache = calloc(end.cap, sizeof(char));
-	int ci = 0;
+	int ki = 0;
 
 	int c;
 	while(EOF != (c = fgetc(f))){
-		if(c == end[ci]){
-
-			cache[ci++] = c;
-			if(cache == end){
+		if(c == end.text[ki]){
+			ki += 1;
+			if(end.text[ki] == '\0'){
 				break;
 			}
-
 			continue;
 
-		} else if((cache[ci - 1] == '\n') && isspace(c)){
+		} else if((end.text[ki-1] == '\n') && isspace(c)){
 			//NOTE: All whitespace after a newline WILL be trimmed.
 			continue;
 
-		} else if(ci > 1){
-			for(int i = 0; cache[i] != '\0'; i++){
-				*s++ = cache[i];
-				cache[i] = '\0';
+		} else if(ki > 0){
+			for(int i = 0; i < ki; i++){
+				*s++ = end.text[i];
 			}
 		}
 		
