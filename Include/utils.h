@@ -2,8 +2,20 @@
 #define ASM_utils 1
 #include <string>
 #include <filesystem>
+#include <iostream>
+#include <random>
+#include <fstream>
+#include <sstream>
+#include <cstring>
+#include <inttypes>
 
 #define debug(x) std::cout<<x
+
+struct {
+	char* text;
+	size_t len;
+	size_t cap;
+} string;
 
 std::string lowercase_string(std::string);
 std::string trim_string(std::string);
