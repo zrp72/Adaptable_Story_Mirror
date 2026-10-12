@@ -16,8 +16,8 @@ int main(int argc, char** argv) {
 		char* config_file = argc > 1 ? argv[1] : "READ_DIRECTIONS";
 		load_ral(config_file, &config);
 
-		game_data data(config.start_chapter);
-		data.story.parse_story_file(std::filesystem::path("Story.txt"));
+		struct game_data data;
+		data.story = parse_story_file(config.story_file, config.start_chapter);
 
 		gui_core gui;
 		assets assets(gui);
