@@ -1,5 +1,41 @@
 #include "utils.h"
 
+void*
+xmalloc(size_t bytes){
+	void* m = malloc(bytes);
+	if(m == NULL){
+		fprintf(stderr, "Out of memory!\n");
+		exit(1);
+	}
+	return m;
+}
+
+void*
+xcalloc(size_t amount, size_t size){
+	void* m = calloc(amount, size);
+	if(m == NULL){
+		fprintf(stderr, "Out of memory!\n");
+		exit(1);
+	}
+	return m;
+}
+
+void*
+xrealloc(void* p, size_t new_size){
+	void* n = realloc(p, new_size);
+	if(n == NULL){
+		fprintf(stderr, "Out of memory!\n");
+		exit(1);
+	}
+	return n;
+
+void
+init_string(struct string string, size_t cap){
+	string.len = 0;
+	string.cap = cap;
+	string.text = excalloc(cap, sizeof(char));
+}
+
 int randomize_number(int range){
 	std::random_device random_device;
 	std::mt19937 generator(random_device());
