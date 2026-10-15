@@ -11,11 +11,16 @@
 
 #define debug(x) std::cout<<x
 
+void* xmalloc(size_t bytes);
+void* xcalloc(size_t amount, size_t size);
+void* xrealloc(void*, size_t new_size);
+
 struct {
 	char* text;
 	size_t len;
 	size_t cap;
 } string;
+void init_string(struct string, int cap);
 
 std::string lowercase_string(std::string);
 std::string trim_string(std::string);
