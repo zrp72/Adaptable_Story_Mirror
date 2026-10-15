@@ -14,87 +14,88 @@ move_past_char(FILE* file, char target){
 	return false;
 }
 
+void
+dynamic_append(char c, struct string string){
+	if((string.cap - string.len) <= 1){
+		string.text = xrealloc(string.text, cap *= 2);
+	}
+	string.text[string.len++] = c;
+	string.text[string.len] = '\0';
+}
+
+int
+match_key(
+	char c, 
+	char* key, 
+	int pos
+){
+		if(c == key[pos]){
+			if(key[pos+1] == '\0'){
+				return 1;
+			}
+			return 0;
+
+		} else if(isspace(c) && (key[pos-1] == '\n')){
+			//NOTE: All whitespace after a newline WILL be trimmed.
+			return 0;
+
+		} else if(ki > 0){
+			return -1;
+		}
+}
+
+void
+append_failed_key(struct string s, char* key, int ki);
+	for(int i = 0; i < ki; i++){
+		dynamic_append(key[i], s);
+	}
+}
+
+
 //NOTE: Does not pass an error if the string ends at EOF
 char*
 get_string_tsc(FILE* f, char end){
-	int cap = 8;
-	struct string string = {
-		.text = calloc(cap, sizeof(char)),
-		.cap = cap
-	};
-	char* s = string;
+
+	struct string string;
+	init_string(string, 8);
+	char* s = string.text;
 
 	int c;
 	while(EOF != (c = fgetc(f))){
 		if(c == end){
 			break;
-		
-		if((s - string) >= (cap - 1)){
-			
-			int si = s - string;
-			
-			string = realloc(string, cap *= 2);
-			if(string == NULL){
-				fprintf(stderr, "Out of memory!!!\n");
-				exit(1);
-			}
-
-			s = string + si;
-		
 		}
-		*s++ = c;
+
+		dynamic_append(c, string);
 	}
-	*s = '\0';
 	return string;
 }
 
 //NOTE: Does not pass an error if the string ends at EOF
 char*
-get_string_tmc(FILE* f, struct string end){
-	int cap = 8;
-	struct string string = {
-		.text = calloc(cap, sizeof(char)),
-		.cap = cap
-	};
-	char* s = string.text;
+get_string_tmc(FILE* f, char* end){
+
+	struct string string;
+	init_string(string, 8);
 	
 	int ki = 0;
-
 	int c;
 	while(EOF != (c = fgetc(f))){
-		if(c == end.text[ki]){
+		int s = match_key(c, end, ki);
+		switch(s){
+		case -1:
+			app_failed_key(string, end, ki);
+			break;
+		case 0:
 			ki += 1;
-			if(end.text[ki] == '\0'){
-				break;
-			}
 			continue;
-
-		} else if((end.text[ki-1] == '\n') && isspace(c)){
-			//NOTE: All whitespace after a newline WILL be trimmed.
-			continue;
-
-		} else if(ki > 0){
-			for(int i = 0; i < ki; i++){
-				*s++ = end.text[i];
-			}
+		case 1:
+			goto finished;
 		}
 		
-		if((s - string) >= (cap - 1)){
-			
-			int si = s - string;
-			
-			string = realloc(string, cap *= 2);
-			if(string == NULL){
-				fprintf(stderr, "Out of memory!!!\n");
-				exit(1);
-			}
-
-			s = string + si;
-		
-		}
-		*s++ = c;
+		dynamic_append(c, string);
 	}
-	*s = '\0';
+finished:
 	return string;
 }
 
