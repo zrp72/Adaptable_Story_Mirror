@@ -52,39 +52,59 @@ append_failed_key(struct string s, char* key, int ki);
 }
 
 
-//NOTE: Does not pass an error if the string ends at EOF
-char*
-get_string_tsc(FILE* f, char end){
-
-	struct string string;
-	init_string(string, 8);
-	char* s = string.text;
-
+//Get file substring to single char
+//Char* end is treated as a list of
+//single chars.
+//NOTES:
+//
+//|Returns EOF if end on EOF,
+//	otherwise returns the last char read
+//
+//|Places the file iterator
+//	past the end character
+//
+//|Trims whitespace if string is
+//	terminated on \n
+int
+gfss_tsc(FILE* f, struct string* string, char* end){
 	int c;
 	while(EOF != (c = fgetc(f))){
-		if(c == end){
+		if(list_contains_c(end, c)){
 			break;
 		}
-
 		dynamic_append(c, string);
 	}
-	return string;
+	if(c == '\n'){
+		trim_tw(string);
+	} else if(c == EOF) {
+		return EOF;
+	}
+	return c;
 }
 
-//NOTE: Does not pass an error if the string ends at EOF
-char*
-get_string_tmc(FILE* f, char* end){
+//Get file substring to multi char
+//Char* end is treated as a key
+//NOTES:
+//Returns EOF if end on EOF
+//Returns 1 if the key was found
+//Places the file iterator
+//	past the end character
+//Trims trailing whitespace 
+//	if string is the last 
+//	char read is \n
+int
+gfss_tmc(FILE* f, struct string* string, char* end){	
 
-	struct string string;
-	init_string(string, 8);
-	
 	int ki = 0;
 	int c;
 	while(EOF != (c = fgetc(f))){
 		int s = match_key(c, end, ki);
 		switch(s){
+		case -2://todo: is this even needed?
+			break;
 		case -1:
 			app_failed_key(string, end, ki);
+			ki = 0;
 			break;
 		case 0:
 			ki += 1;
@@ -258,7 +278,6 @@ parse_story_file(const char* filepath, char* start_chapter){
 		if(isspace(c)||c == '_'||c == '|'){
 			continue;
 		}
-
 		switch(c){
 		case '/':
 			fmove_pc(f, '\n'))
