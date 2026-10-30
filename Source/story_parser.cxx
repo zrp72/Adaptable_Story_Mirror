@@ -138,7 +138,7 @@ finished:
 
 //TODO: Factor
 int
-parse_sv(FILE* f, story_vars* sv, char* ends){
+edit_global_sv(FILE* f, story_vars* sv, char* ends){
 	int rv;
 	struct string cdg = get_str(8);
 	struct string dne = get_str(8);
@@ -149,9 +149,9 @@ parse_sv(FILE* f, story_vars* sv, char* ends){
 
 		if(rv == '<'){
 			gfss_tsc(f, &cdg, ">)");
-			if(!*sv.contains(cdg)){
-				data_group* dg = new *dg();
-				*sv[cdg] = dg;
+			if(!sv->data_groups(cdg)){
+				printf("Attempted to access nonexistent data group: %s\n.", cdg.text);
+				exit(1);
 			}
 		} else if(cdg.len == 0) {
 			printf("Active data group not declared during sv parse.");
@@ -162,36 +162,96 @@ parse_sv(FILE* f, story_vars* sv, char* ends){
 			struct string name = get_str(8);
 			rv = gfss_tsc(f, &name, dne.text)
 			trim_tw(name);
-			if(!*sv[cdg].contains(name)){
-				*sv[cdg][name] = 0;
+			if(!sv->data_groups[cdg].contains(name)){
+				sv->data_groups[cdg][name] = 0;
 			}
 			if(list_contains_c(ends, rv)){
 				fungetc(rv, f);
-				*sv[cdg][name] += 1;
+				sv->data_groups[cdg][name] += 1;
 			}
 			switch(rv){
 			case ',':
-				*sv[cdg][name] += 1;
+				sv->data_groups[cdg][name] += 1;
 				continue;
 			case '+':
 				int a;
 				fscanf(f, "%d", &a);
-				*sv[cdg][name] += a;
+				sv->data_groups[cdg][name] += a;
 				continue;
 			case '-':
 				int a;
 				fscanf(f, "%d", &a);
-				*sv[cdg][name] -= a;
+				sv->data_groups[cdg][name] -= a;
 				continue;
 			case '=':
 				int a;
 				fscanf(f, "%d", &a);
-				*sv[cdg][name] = a;
+				sv->data_groups[cdg][name] = a;
 				continue;
 			}
 		}
 	}
 	if(sv.empty()){
+		printf("No story variables found to parse.");
+	}
+	return rv;
+}
+
+int
+edit_local_sv(FILE* f, story_vars* sv, char* ends){
+	int rv;
+	struct string cdg = get_str(8);
+	struct string dne = get_str(8);
+	dne.text = "+-=,";
+	dynamic_mappend(dne, ends);
+	
+	while(!list_contains_c(ends, rv = fmove_pw(f))){
+
+		if(rv == '<'){
+			gfss_tsc(f, &cdg, ">)");
+			if(!sv->data_groups(cdg)){
+				data_group dg();
+				sv->data_groups[cdg] = dg;
+			}
+		} else if(cdg.len == 0) {
+			printf("Active data group not declared during sv parse.");
+			return -1;
+		} else if(rv == ','){
+			fseek(f, 1, SEEK_CUR);
+		} else {
+			struct string name = get_str(8);
+			rv = gfss_tsc(f, &name, dne.text)
+			trim_tw(name);
+			if(!sv->data_groups[cdg].contains(name)){
+				sv->data_groups[cdg][name] = 0;
+			}
+			if(list_contains_c(ends, rv)){
+				fungetc(rv, f);
+				sv->data_groups[cdg][name] += 1;
+			}
+			switch(rv){
+			case ',':
+				sv->data_groups[cdg][name] += 1;
+				continue;
+			case '+':
+				int a;
+				fscanf(f, "%d", &a);
+				sv->data_groups[cdg][name] += a;
+				continue;
+			case '-':
+				int a;
+				fscanf(f, "%d", &a);
+				sv->data_groups[cdg][name] -= a;
+				continue;
+			case '=':
+				int a;
+				fscanf(f, "%d", &a);
+				sv->data_groups[cdg][name] = a;
+				continue;
+			}
+		}
+	}
+	if(sv->data_groups.empty()){
 		printf("No story variables found to parse.");
 	}
 	return rv;
@@ -257,7 +317,7 @@ parse_nexus(FILE* f, story* s){
 
 	struct exit_group eg = get_ext_grp();
 	while(']' != fmove_pw(f) && 
-			']' != parse_sv(f, &eg.conds, ":]")
+			']' != edit_local_sv(f, &eg.conds, ":]")
 	){
 		fmove_nl(f);
 		parse_ext_grp(f, &eg);
@@ -273,6 +333,28 @@ void
 free_nxs(struct nexus* nxs){
 	delete nxs;
 }
+
+void
+create_data_group(FILE* f, struct story* s){
+	struct string name = get_string(8);
+	gfss_tsc(f, name, "\n";
+	data_group dg();
+	*sv[name] = dg;
+}
+
+void
+add_dg_alias(FILE* f, struct story* s){
+	struct string dg = get_string(8);
+	if('\n' == gfss_tsc(f, dg, ":\n")){
+		printf("dg alias ended at \\n before finding the alias: %s", dg.text);
+		return;
+	}
+	struct string alias = get_string(8);
+	gfss_tsc(f, alias, "\n");
+	s->dg_aliases[alias] = dg;
+}
+
+
 
 struct story*
 parse_story_file(const char* filepath, char* start_chapter){
@@ -313,7 +395,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 			parse_nexus(f, story);
 			continue;
 		case '(':
-			parse_sv(f, &option_conds, ')');
+			edit_local_sv(f, &option_conds, ')');
 			continue;
 		case '{':
 			parse_option(f, story);
