@@ -51,6 +51,15 @@ append_failed_key(struct string s, char* key, int ki);
 	}
 }
 
+int
+list_contains_c(char* list, char c){
+	for(int i = 0; list[i] != '\0'; i++){
+		if(c == list[i]){
+			return 1;
+		}
+	}
+	return 0;
+}
 
 //Get file substring to single char
 //Char* end is treated as a list of
