@@ -3,8 +3,10 @@
 
 //NEW CODE
 
+//File move past char
+//Returns false on EOF
 bool
-move_past_char(FILE* file, char target){
+fmove_pc(FILE* file, char target){
 	char c;
 	while(EOF != (c = fgetc(file))){
 		if(c == target){
@@ -14,38 +16,47 @@ move_past_char(FILE* file, char target){
 	return false;
 }
 
-void
-dynamic_append(char c, struct string string){
-	if((string.cap - string.len) <= 1){
-		string.text = xrealloc(string.text, cap *= 2);
+//File move past whitespace
+//Returns -1 on EOF
+//Otherwise returns the first non-ws char
+int
+fmove_pw(FILE* f){
+	int c;
+	while(EOF != (c = fgetc(f))){
+		if(!isspace(c)){
+			fungetc(c, f);
+			return c;
+		}
 	}
 	string.text[string.len++] = c;
 	string.text[string.len] = '\0';
 }
 
+//Match key iteratively
 int
 match_key(
 	char c, 
 	char* key, 
 	int pos
 ){
-		if(c == key[pos]){
-			if(key[pos+1] == '\0'){
-				return 1;
-			}
-			return 0;
-
-		} else if(isspace(c) && (key[pos-1] == '\n')){
-			//NOTE: All whitespace after a newline WILL be trimmed.
-			return 0;
-
-		} else if(ki > 0){
-			return -1;
+	if(c == key[pos]){
+		if(key[pos+1] == '\0'){
+			return 1;
 		}
+		return 0;
+
+	} else if(isspace(c) && (key[pos-1] == '\n')){
+		//NOTE: All whitespace after a newline WILL be trimmed.
+		return 0;
+
+	} else if(ki > 0){
+		return -1;
+	}
+	return -2;
 }
 
 void
-append_failed_key(struct string s, char* key, int ki);
+app_failed_key(struct string* s, char* key, int ki);
 	for(int i = 0; i < ki; i++){
 		dynamic_append(key[i], s);
 	}
