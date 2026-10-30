@@ -136,20 +136,58 @@ finished:
 	return 1;
 }
 
+int
+add_dg_var(FILE* f, data_group* dg, char* ends){
+	//TODO: This is gonna run a lot of times,
+	//figure out a way to only call mappend once
+	struct string dne = get_str(8);
+	dne.text = "+-=,";
+	dynamic_mappend(dne, ends);
+
+	struct string name = get_str(8);
+	rv = gfss_tsc(f, &name, dne.text)
+	trim_tw(name);
+	if(!*dg.contains(name)){
+		*dg[name] = 0;
+	}
+	if(list_contains_c(ends, rv)){
+		fungetc(rv, f);
+		*dg[name] += 1;
+		return rv;
+	}
+	switch(rv){
+	case ',':
+		*dg[name] += 1;
+		return rv;
+	case '+':
+		int a;
+		fscanf(f, "%d", &a);
+		*dg[name] += a;
+		return fgetc(f);
+	case '-':
+		int a;
+		fscanf(f, "%d", &a);
+		*dg[name] -= a;
+		return fgetc(f);
+	case '=':
+		int a;
+		fscanf(f, "%d", &a);
+		*dg[name] = a;
+		return fgetc(f);
+	}
+}
+
 //TODO: Factor
 int
 edit_global_sv(FILE* f, story_vars* sv, char* ends){
 	int rv;
 	struct string cdg = get_str(8);
-	struct string dne = get_str(8);
-	dne.text = "+-=,";
-	dynamic_mappend(dne, ends);
 	
 	while(!list_contains_c(ends, rv = fmove_pw(f))){
 
 		if(rv == '<'){
-			gfss_tsc(f, &cdg, ">)");
-			if(!sv->data_groups(cdg)){
+			gfss_tsc(f, &cdg, ">");
+			if(!*sv.contains(cdg)){
 				printf("Attempted to access nonexistent data group: %s\n.", cdg.text);
 				exit(1);
 			}
@@ -159,35 +197,8 @@ edit_global_sv(FILE* f, story_vars* sv, char* ends){
 		} else if(rv == ','){
 			fseek(f, 1, SEEK_CUR);
 		} else {
-			struct string name = get_str(8);
-			rv = gfss_tsc(f, &name, dne.text)
-			trim_tw(name);
-			if(!sv->data_groups[cdg].contains(name)){
-				sv->data_groups[cdg][name] = 0;
-			}
-			if(list_contains_c(ends, rv)){
-				fungetc(rv, f);
-				sv->data_groups[cdg][name] += 1;
-			}
-			switch(rv){
-			case ',':
-				sv->data_groups[cdg][name] += 1;
-				continue;
-			case '+':
-				int a;
-				fscanf(f, "%d", &a);
-				sv->data_groups[cdg][name] += a;
-				continue;
-			case '-':
-				int a;
-				fscanf(f, "%d", &a);
-				sv->data_groups[cdg][name] -= a;
-				continue;
-			case '=':
-				int a;
-				fscanf(f, "%d", &a);
-				sv->data_groups[cdg][name] = a;
-				continue;
+			if(')' == add_dg_var(FILE* f, *sv[cdg], ",)")){
+				break;
 			}
 		}
 	}
@@ -209,9 +220,9 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 
 		if(rv == '<'){
 			gfss_tsc(f, &cdg, ">)");
-			if(!sv->data_groups(cdg)){
+			if(!*sv.contains(cdg)){
 				data_group dg();
-				sv->data_groups[cdg] = dg;
+				*sv[cdg] = dg;
 			}
 		} else if(cdg.len == 0) {
 			printf("Active data group not declared during sv parse.");
@@ -219,39 +230,12 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 		} else if(rv == ','){
 			fseek(f, 1, SEEK_CUR);
 		} else {
-			struct string name = get_str(8);
-			rv = gfss_tsc(f, &name, dne.text)
-			trim_tw(name);
-			if(!sv->data_groups[cdg].contains(name)){
-				sv->data_groups[cdg][name] = 0;
-			}
-			if(list_contains_c(ends, rv)){
-				fungetc(rv, f);
-				sv->data_groups[cdg][name] += 1;
-			}
-			switch(rv){
-			case ',':
-				sv->data_groups[cdg][name] += 1;
-				continue;
-			case '+':
-				int a;
-				fscanf(f, "%d", &a);
-				sv->data_groups[cdg][name] += a;
-				continue;
-			case '-':
-				int a;
-				fscanf(f, "%d", &a);
-				sv->data_groups[cdg][name] -= a;
-				continue;
-			case '=':
-				int a;
-				fscanf(f, "%d", &a);
-				sv->data_groups[cdg][name] = a;
-				continue;
+			if(')' == add_dg_var(FILE* f, *sv[cdg], ",)")){
+				break;
 			}
 		}
 	}
-	if(sv->data_groups.empty()){
+	if(sv.empty()){
 		printf("No story variables found to parse.");
 	}
 	return rv;
