@@ -137,11 +137,32 @@ finished:
 }
 
 int
+parse_fint(FILE* f, int* trg, int op){
+	int a;
+	switch(op){
+	case '+':
+		fscanf(f, "%d", &a);
+		*trg += a;
+		return fgetc(f);
+	case '-':
+		fscanf(f, "%d", &a);
+		*trg -= a;
+		return fgetc(f);
+	case '=':
+		fscanf(f, "%d", &a);
+		*trg = a;
+		return fgetc(f);
+	}
+	fprintf(stderr, "Invalid operation type: \"%c\"\n", op);
+}
+
+
+int
 add_dg_var(FILE* f, data_group* dg, char* ends){
 	//TODO: This is gonna run a lot of times,
 	//figure out a way to only call mappend once
 	struct string dne = get_str(8);
-	dne.text = "+-=,";
+	dne.text = "+-=";
 	dynamic_mappend(dne, ends);
 
 	struct string name = get_str(8);
@@ -151,30 +172,10 @@ add_dg_var(FILE* f, data_group* dg, char* ends){
 		*dg[name] = 0;
 	}
 	if(list_contains_c(ends, rv)){
-		fungetc(rv, f);
 		*dg[name] += 1;
 		return rv;
 	}
-	switch(rv){
-	case ',':
-		*dg[name] += 1;
-		return rv;
-	case '+':
-		int a;
-		fscanf(f, "%d", &a);
-		*dg[name] += a;
-		return fgetc(f);
-	case '-':
-		int a;
-		fscanf(f, "%d", &a);
-		*dg[name] -= a;
-		return fgetc(f);
-	case '=':
-		int a;
-		fscanf(f, "%d", &a);
-		*dg[name] = a;
-		return fgetc(f);
-	}
+	return parse_fint(f, &*dg[name], rv);
 }
 
 //TODO: Factor
@@ -338,7 +339,10 @@ add_dg_alias(FILE* f, struct story* s){
 	s->dg_aliases[alias] = dg;
 }
 
+void
+parse_option(FILE* f, struct story* s){
 
+}
 
 struct story*
 parse_story_file(const char* filepath, char* start_chapter){
