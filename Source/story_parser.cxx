@@ -114,19 +114,47 @@ parse_story_file(const char* filepath, char* start_chapter){
 	struct story_vars option_conds;
 
 	int c;
-	char prev;
 	while(EOF != (c = fgetc(f)){
-		if(isspace(c)||c == '_'){
+		if(isspace(c)||c == '_'||c == '|'){
 			continue;
 		}
 
 		switch(c){
 		case '/':
-			move_past_char(f, '\n'))
+			fmove_pc(f, '\n'))
 			continue;
 		case '\\':
-			char* marker = get_string_tsc(f, '\n');
+			remove_marker(f, &style.markers);
+			continue;
+		case '#':
+			define_marker(f, &style.markers);
+			continue;
+		case '@':
+			create_data_group(f, story);
+			continue;
+		case '&':
+			add_dg_alias(f, story);
+			continue;
+		case '[':
+			parse_nexus(f, story);
+			continue;
+		case '(':
+			parse_sv(f, &option_conds, ')');
+			continue;
+		case '{':
+			parse_option(f, story);
+			continue;
+		default:
+			parse_paragraph(f, story);
+			option_conds.clear();
+		}
 	}
+	if(EOF == fclose(f)){
+		fprintf(stderr, "Failed to close story file.");
+		exit(1);
+	}
+	return story;
+}
 
 }
 
