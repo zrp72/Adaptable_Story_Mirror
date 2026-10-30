@@ -55,7 +55,18 @@ struct {
 	size_t cap;
 	uint8_t ec;
 } string;
-void init_string(struct string, int cap);
+//THIS IS PLACEHOLDER UNTIL FULL C UMAP IMPLEMENTATION
+struct string_hash {
+	size_t operator()(const struct string& s) const noexcept {
+		return std::hash<std::string_view>{}(s.text);
+	}
+};
+struct char_ptr_hash {
+	size_t operator()(char* s) const noexcept {
+		return std::hash<std::string_view>{}(s);
+	}
+};
+///////////////////////////////////////////////////////
 #define FULL_WS 1<<0
 void init_string(struct string*, size_t cap);
 struct string get_string(size_t cap);
