@@ -3,12 +3,9 @@
 #include <string>
 #include <unordered_map>
 
+#include "utils.h"
 #include "glyphtext.h"
 
-template<typename x, typename y>
-using umap = std::unordered_map<x, y>;
-template<typename x>
-using vector = std::vector<x>;
 
 typedef data_group = umap<char*, int>;
 typedef story_vars = umap<char*, data_group>;

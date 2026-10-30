@@ -11,6 +11,9 @@
 
 #define debug(x) std::cout<<x
 
+template<typename x>
+using vector = std::vector<x>;
+
 void* xmalloc(size_t bytes);
 void* xcalloc(size_t amount, size_t size);
 void* xrealloc(void*, size_t new_size);
