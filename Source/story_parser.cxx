@@ -107,8 +107,8 @@ parse_story_file(const char* filepath, char* start_chapter){
 		exit(1);
 	}
 
-	//does this work?
-	struct story = {.story_location = start_chapter};
+	struct story* story = new *story();
+	story->location = start_chapter;
 
 	struct styling style;
 	struct story_vars option_conds;
