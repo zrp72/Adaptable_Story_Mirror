@@ -6,6 +6,10 @@
 #include "utils.h"
 #include "glyphtext.h"
 
+enum LCTN_T{
+	PRG,
+	NXS
+};
 
 typedef data_group = umap<char*, int>;
 typedef story_vars = umap<char*, data_group>;
