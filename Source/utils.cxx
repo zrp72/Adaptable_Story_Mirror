@@ -28,12 +28,70 @@ xrealloc(void* p, size_t new_size){
 		exit(1);
 	}
 	return n;
+}
+
+////////////////////////////////////////////
+//The following functions are placeholder
+//for future custom umap implementation
+
+	int um_init(struct umap*, um_hashfunc hf){
+	
+	}
+	int um_insert(struct umap* um, 
+		void* k, void* v
+	){
+		size_t i = hf(*k);
+		umn* bkt = um->buckets[i];
+		while(bkt->next != NULL){
+			bkt = bkt->next;
+		}
+		bkt->value = v;
+	}
+
+	void um_remove(umap* um,
+		void* k,
+	){
+		*um.erase(*k);
+	}
+
+	bool um_contains(umap* um,
+		void* key,
+	){
+		if(*um.contains(*key)){
+			return true;
+		}
+		return false;
+	}
+
+	size_t string_hash(void*){}
+	size_t char_hash(void*){}
+	size_t int_hash(void*){}
+	size_t bool_hash(void*){}//Just in case
+////////////////////////////////////////////
+////////////////////////////////////////////
 
 void
-init_string(struct string string, size_t cap){
-	string.len = 0;
-	string.cap = cap;
-	string.text = excalloc(cap, sizeof(char));
+init_string(struct string* string, size_t cap){
+	string->len = 0;
+	string->cap = cap;
+	string->text = xcalloc(cap, sizeof(char));
+	string->ec = FULL_WS;
+}
+
+struct string
+get_string(size_t cap){
+	struct string s;
+	init_string(&s, cap);
+	return string;
+}
+
+void
+dynamic_append(char c, struct string* string){
+	if((string->cap - string->len) <= 1){
+		string->text = xrealloc(string->text, string->cap *= 2);
+	}
+	string->text[string->len++] = c;
+	string->text[string->len] = '\0';
 }
 
 int randomize_number(int range){
