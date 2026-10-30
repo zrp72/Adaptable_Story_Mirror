@@ -168,14 +168,14 @@ add_dg_var(FILE* f, data_group* dg, char* ends){
 	struct string name = get_str(8);
 	rv = gfss_tsc(f, &name, dne.text)
 	trim_tw(name);
-	if(!*dg.contains(name)){
-		*dg[name] = 0;
+	if(!dg->contains(name)){
+		dg->at(name) = 0;
 	}
 	if(list_contains_c(ends, rv)){
-		*dg[name] += 1;
+		dg->at(name) += 1;
 		return rv;
 	}
-	return parse_fint(f, &*dg[name], rv);
+	return parse_fint(f, &dg->at(name), rv);
 }
 
 //TODO: Factor
@@ -198,12 +198,12 @@ edit_global_sv(FILE* f, story_vars* sv, char* ends){
 		} else if(rv == ','){
 			fseek(f, 1, SEEK_CUR);
 		} else {
-			if(')' == add_dg_var(FILE* f, &*sv[cdg], ",)")){
+			if(')' == add_dg_var(FILE* f, &sv->at(cdg), ",)")){
 				break;
 			}
 		}
 	}
-	if(sv.empty()){
+	if(sv->empty()){
 		printf("No story variables found to parse.");
 	}
 	return rv;
@@ -221,9 +221,9 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 
 		if(rv == '<'){
 			gfss_tsc(f, &cdg, ">)");
-			if(!*sv.contains(cdg)){
+			if(!sv->contains(cdg)){
 				data_group dg();
-				*sv[cdg] = dg;
+				sv->insert(cdg, dg);
 			}
 		} else if(cdg.len == 0) {
 			printf("Active data group not declared during sv parse.");
@@ -231,7 +231,7 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 		} else if(rv == ','){
 			fseek(f, 1, SEEK_CUR);
 		} else {
-			if(')' == add_dg_var(FILE* f, &*sv[cdg], ",)")){
+			if(')' == add_dg_var(FILE* f, &sv->at(cdg), ",)")){
 				break;
 			}
 		}
@@ -324,7 +324,7 @@ create_data_group(FILE* f, struct story* s){
 	struct string name = get_string(8);
 	gfss_tsc(f, name, "\n";
 	data_group dg();
-	*sv[name] = dg;
+	sv->data_groups[name] = dg;
 }
 
 void
