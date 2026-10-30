@@ -28,8 +28,7 @@ fmove_pw(FILE* f){
 			return c;
 		}
 	}
-	string.text[string.len++] = c;
-	string.text[string.len] = '\0';
+	return false;
 }
 
 //Match key iteratively
