@@ -86,13 +86,29 @@ get_string(size_t cap){
 }
 
 void
-dynamic_append(char c, struct string* string){
+dynamic_append(struct string* string, char c){
 	if((string->cap - string->len) <= 1){
 		string->text = xrealloc(string->text, string->cap *= 2);
 	}
 	string->text[string->len++] = c;
 	string->text[string->len] = '\0';
 }
+
+void
+dynamic_mappend(struct string* s, char* mc){
+	for(int i = 0; mc[i] != '\0'; i++){
+		dynamic_append(s, mc[i]);
+	}
+}
+
+void
+dynamic_sappend(struct string* s, char* src, int i, int l){
+	while(i < (i + l)){
+		dynamic_append(s, src[i]);
+		b += 1;
+	}
+}
+
 
 int randomize_number(int range){
 	std::random_device random_device;

@@ -70,7 +70,8 @@ struct char_ptr_hash {
 #define FULL_WS 1<<0
 void init_string(struct string*, size_t cap);
 struct string get_string(size_t cap);
-void dynamic_append(char, struct string*);
+void dynamic_append(struct string*, char);
+void dynamic_mappend(struct string*, char*);
 
 std::string lowercase_string(std::string);
 std::string trim_string(std::string);

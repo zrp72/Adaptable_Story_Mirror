@@ -54,13 +54,6 @@ match_key(
 	return -2;
 }
 
-void
-app_failed_key(struct string* s, char* key, int ki);
-	for(int i = 0; i < ki; i++){
-		dynamic_append(key[i], s);
-	}
-}
-
 int
 list_contains_c(char* list, char c){
 	for(int i = 0; list[i] != '\0'; i++){
@@ -91,7 +84,7 @@ gfss_tsc(FILE* f, struct string* string, char* end){
 		if(list_contains_c(end, c)){
 			break;
 		}
-		dynamic_append(c, string);
+		dynamic_append(string, c);
 	}
 	if(c == '\n'){
 		trim_tw(string);
@@ -122,7 +115,7 @@ gfss_tmc(FILE* f, struct string* string, char* end){
 		case -2://todo: is this even needed?
 			break;
 		case -1:
-			app_failed_key(string, end, ki);
+			dynamic_sappend(string, end, 0, ki);
 			ki = 0;
 			break;
 		case 0:
@@ -132,7 +125,7 @@ gfss_tmc(FILE* f, struct string* string, char* end){
 			goto finished;
 		}
 		
-		dynamic_append(c, string);
+		dynamic_append(string, c);
 	}
 finished:
 	if(c == '\n'){
@@ -148,6 +141,10 @@ int
 parse_sv(FILE* f, story_vars* sv, char* ends){
 	int rv;
 	struct string cdg = get_str(8);
+	struct string dne = get_str(8);
+	dne.text = "+-+,";
+	dynamic_append_m(dne, ends);
+	
 	while(rv = fmove_pw(f)){
 		if(list_contains_c(ends, rv)){
 			break;
@@ -166,7 +163,7 @@ parse_sv(FILE* f, story_vars* sv, char* ends){
 			fseek(f, 1, SEEK_CUR);
 		} else {
 			struct string name = get_str(8);
-			rv = gfss_tsc(f, &name, "+-=,)")
+			rv = gfss_tsc(f, &name, "+-=,"+ends)
 			trim_tw(name);
 			if(!*sv[cdg].contains(name)){
 				*sv[cdg][name] = 0;
