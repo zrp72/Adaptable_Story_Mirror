@@ -14,59 +14,55 @@ enum LCTN_T{
 typedef data_group = std::unordered_map<struct string, int, cstring_hash>;
 typedef story_vars = std::unordered_map<struct string, data_group, string_hash>;
 
-struct {
+struct txtr_info {
 	char* border;
 	char* entry_anim;
 	char* exit_anim;
-} txtr_info;
+};
 
-struct {
+struct styling {
 	txtr_info paragraph;
 	txtr_info option;
 	glyph_styling glyph;
 	std::unordered_map<struct string, struct string, string_hash> markers;
+};
 
-	umap<char*, bool> bold_markers;
-	umap<char*, bool> italic_markers;
-} styling;
-
-struct {
+struct option {
 	vector<glyph> prompt;
 	char* dst_label;
 	story_vars reveal_conds;
 	story_vars changes;
 	txtr_info txtr_data;
-} option;
+};
 
-struct {
+struct paragraph {
+	struct LCTN_T t;
+
 	vector<glyph> text;
 	story_vars changes;
 	vector<option> options;
 	txtr_info texture_data;
-} paragraph;
+};
 
-struct {
-	struct {
-		story_vars conditions;
-		vector<std::string> exits;
-	} exit_group;
+struct nexus {
+	struct LCTN_T t;
+
+	struct exit_group {
+		story_vars conds;
+		vector<struct string> exits;
+	};
 	
 	vector<exit_group> exits;
 	int visits;
-} nexus;
+};
 
-struct {
-	umap<char*, std::pair<char, int>> tag_map;
-	vector<paragraph> paragraphs;
-	vector<nexus> nexuses;
+struct story {
+	std::unordered_map<struct string, void*, string_hash> tag_map;
 	vector<glyph> used_glyphs;
-	char* story_location;
-} story;
-
-struct {
-	story story;
-	umap<char*, item> items;
-	character player;
-} game_data;
+	char* location;
+	story_vars data_groups;
+	std::unordered_map<struct string, struct string, string_hash> dg_aliases;
+};
 
 struct story* parse_story_file(char* filepath);
+
