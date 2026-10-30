@@ -53,8 +53,13 @@ struct {
 	char* text;
 	size_t len;
 	size_t cap;
+	uint8_t ec;
 } string;
 void init_string(struct string, int cap);
+#define FULL_WS 1<<0
+void init_string(struct string*, size_t cap);
+struct string get_string(size_t cap);
+void dynamic_append(char, struct string*);
 
 std::string lowercase_string(std::string);
 std::string trim_string(std::string);
