@@ -142,13 +142,10 @@ parse_sv(FILE* f, story_vars* sv, char* ends){
 	int rv;
 	struct string cdg = get_str(8);
 	struct string dne = get_str(8);
-	dne.text = "+-+,";
-	dynamic_append_m(dne, ends);
+	dne.text = "+-=,";
+	dynamic_mappend(dne, ends);
 	
-	while(rv = fmove_pw(f)){
-		if(list_contains_c(ends, rv)){
-			break;
-		}
+	while(!list_contains_c(ends, rv = fmove_pw(f))){
 
 		if(rv == '<'){
 			gfss_tsc(f, &cdg, ">)");
@@ -163,14 +160,16 @@ parse_sv(FILE* f, story_vars* sv, char* ends){
 			fseek(f, 1, SEEK_CUR);
 		} else {
 			struct string name = get_str(8);
-			rv = gfss_tsc(f, &name, "+-=,"+ends)
+			rv = gfss_tsc(f, &name, dne.text)
 			trim_tw(name);
 			if(!*sv[cdg].contains(name)){
 				*sv[cdg][name] = 0;
 			}
-			switch(rv){
-			case ')':
+			if(list_contains_c(ends, rv)){
 				fungetc(rv, f);
+				*sv[cdg][name] += 1;
+			}
+			switch(rv){
 			case ',':
 				*sv[cdg][name] += 1;
 				continue;
