@@ -23,6 +23,8 @@ struct {
 struct {
 	txtr_info paragraph;
 	txtr_info option;
+	glyph_styling glyph;
+	std::unordered_map<struct string, struct string, string_hash> markers;
 
 	umap<char*, bool> bold_markers;
 	umap<char*, bool> italic_markers;

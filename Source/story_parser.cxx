@@ -111,7 +111,6 @@ parse_story_file(const char* filepath, char* start_chapter){
 	struct story = {.story_location = start_chapter};
 
 	struct styling style;
-	struct glyph_styling glyph_style;
 	struct story_vars option_conds;
 
 	int c;
