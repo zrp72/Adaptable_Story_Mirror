@@ -11,8 +11,8 @@ enum LCTN_T{
 	NXS
 };
 
-typedef data_group = umap<char*, int>;
-typedef story_vars = umap<char*, data_group>;
+typedef data_group = std::unordered_map<struct string, int, cstring_hash>;
+typedef story_vars = std::unordered_map<struct string, data_group, string_hash>;
 
 struct {
 	char* border;
