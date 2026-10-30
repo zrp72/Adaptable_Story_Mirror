@@ -197,7 +197,7 @@ edit_global_sv(FILE* f, story_vars* sv, char* ends){
 		} else if(rv == ','){
 			fseek(f, 1, SEEK_CUR);
 		} else {
-			if(')' == add_dg_var(FILE* f, *sv[cdg], ",)")){
+			if(')' == add_dg_var(FILE* f, &*sv[cdg], ",)")){
 				break;
 			}
 		}
@@ -230,7 +230,7 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 		} else if(rv == ','){
 			fseek(f, 1, SEEK_CUR);
 		} else {
-			if(')' == add_dg_var(FILE* f, *sv[cdg], ",)")){
+			if(')' == add_dg_var(FILE* f, &*sv[cdg], ",)")){
 				break;
 			}
 		}
