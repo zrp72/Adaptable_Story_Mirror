@@ -96,7 +96,147 @@ get_string_tmc(FILE* f, char* end){
 		dynamic_append(c, string);
 	}
 finished:
-	return string;
+	if(c == '\n'){
+		trim_tw(string);
+	} else if(c == EOF) {
+		return EOF;
+	}
+	return 1;
+}
+
+//TODO: Factor
+int
+parse_sv(FILE* f, story_vars* sv, char* ends){
+	int rv;
+	struct string cdg = get_str(8);
+	while(rv = fmove_pw(f)){
+		if(list_contains_c(ends, rv)){
+			break;
+		}
+
+		if(rv == '<'){
+			gfss_tsc(f, &cdg, ">)");
+			if(!*sv.contains(cdg)){
+				data_group* dg = new *dg();
+				*sv[cdg] = dg;
+			}
+		} else if(cdg.len == 0) {
+			printf("Active data group not declared during sv parse.");
+			return -1;
+		} else if(rv == ','){
+			fseek(f, 1, SEEK_CUR);
+		} else {
+			struct string name = get_str(8);
+			rv = gfss_tsc(f, &name, "+-=,)")
+			trim_tw(name);
+			if(!*sv[cdg].contains(name)){
+				*sv[cdg][name] = 0;
+			}
+			switch(rv){
+			case ')':
+				fungetc(rv, f);
+			case ',':
+				*sv[cdg][name] += 1;
+				continue;
+			case '+':
+				int a;
+				fscanf(f, "%d", &a);
+				*sv[cdg][name] += a;
+				continue;
+			case '-':
+				int a;
+				fscanf(f, "%d", &a);
+				*sv[cdg][name] -= a;
+				continue;
+			case '=':
+				int a;
+				fscanf(f, "%d", &a);
+				*sv[cdg][name] = a;
+				continue;
+			}
+		}
+	}
+	if(sv.empty()){
+		printf("No story variables found to parse.");
+	}
+	return rv;
+}
+
+void
+remove_marker(FILE* f, struct story* s){
+	struct string marker = get_string(8);
+	gfss_tsc(f, marker, '\n');
+	s->tag_map.erase(marker);
+}
+
+void
+define_marker(FILE* f, umap* db){
+	struct string* change = get_string(8)
+	gfss_tsc(f, change, ':');
+	struct string* marker = get_string(8);
+	gfss_tsc(f, marker, '\n');
+	um_insert(&style.umap, marker, change); 
+}
+
+struct nexus*
+get_nxs(){
+	struct nexus* n = new *n();
+	n->visits = 0;
+	n->t = NXS;
+	return n;
+}
+
+struct exit_group
+get_ext_grp(){
+	struct exit_group eg;
+	//In the future this will initialize the vector and umaps
+	return eg;
+}
+
+int
+parse_ext_grp(FILE* f, struct exit_group* eg){
+
+	struct string e = get_string(8);
+	while('\n' != fmove_pw_sl(f)){
+		rv = gfss_tsc(f, &e, "\n]");
+		if(rv == ']'){
+			break;
+		}
+		eg->exits.push_back(e);
+	}
+}
+
+void
+parse_nexus(FILE* f, story* s){
+	struct string tag = gfss_tsc(f, ':');
+	if(s->tag_map.contains(tag)){
+		fprintf(stderr,
+			"Second declaration of nexus tag <%s>", 
+			tag.text
+		);
+		exit(1);
+	}
+
+	struct nexus* nxs = get_nxs();
+	s->tag_map[tag] = nxs;
+
+	struct exit_group eg = get_ext_grp();
+	while(']' != fmove_pw(f) && 
+			']' != parse_sv(f, &eg.conds, ":]")
+	){
+		fmove_nl(f);
+		parse_ext_grp(f, &eg);
+		nxs->exits.push_back(eg);
+		eg = get_ext_group();
+	}
+	if(nxs->exits.size() == 0){
+		printf("Nexus(%s) declared with zero exits.", tag.text);
+	}
+}
+
+void
+free_nxs(struct nexus* nxs){
+	delete nxs;
 }
 
 struct story*
