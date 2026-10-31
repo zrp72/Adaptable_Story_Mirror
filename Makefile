@@ -7,7 +7,9 @@ else
     HOME_DIR ?= $(HOME)
 endif
 
-CXXFLAGS = -std=c++20 -IInclude \
+CXXFLAGS = -std=c++20 
+CPPFLAGS = \
+	-IInclude \
 	-I$(HOME_DIR)\Documents\SDKs\SDL\x86_64-w64-mingw32\include \
 	-I$(HOME_DIR)\Documents\SDKs\SDL_image\x86_64-w64-mingw32\include \
 	-I$(HOME_DIR)\Documents\SDKs\SDL_ttf\x86_64-w64-mingw32\include
