@@ -28,7 +28,7 @@ compare_sv(story_vars& sv1, story_vars& sv2){
 	return viable;
 }
 
-std::string*
+struct string
 get_destination(story &story, nexus &nexus){
 
 	nexus.visits += 1;
@@ -101,38 +101,41 @@ update_UI(struct story& data, assets& assets, gui_core& gui){
 }
 
 int
-progress_story(game_data &data, assets& main_assets, gui_core& gui, int choice){
-	auto& tag_map = data.story.tag_map;
-	auto& location = data.story.tag_map.at(data.story.story_location);
-	paragraph& p = data.story.paragraphs.at(location.second);
+progress_story(struct story &data, assets& main_assets, gui_core& gui, int choice){
+	auto& tag_map = story.tag_map;
+	void* location = tag_map.at(story.location);
+	if(location->t == NXS){
+		fprintf(stderr, "Story location set to nexus(%s)?\n", story.location);
+		exit(1);
+	}
 
-	if(choice > p.options.size()){
+	if(choice > location.options.size()){
 		debug("Clicked option does not exist.\n");
-		return 1;
+		exit(1);
 	} else {
 
-		option& c = p.options[choice - 1];
+		option& c = location.options[choice - 1];
 
 		if(!c.changes.empty()){
 			apply_changes(data, c.changes);
 		}
 
-		debug("Dest label: " << c.dest_label << '\n');
-		std::string* dest = &c.dest_label;
+		debug("Dest label: " << c.dst_label.text << '\n');
+		void* dst = tag_map[c.dst_label];
+		struct string* dst = &c.dst_label;
 
-		while(tag_map.at(*dest).first == 'n'){
-			auto& nexus = data.story.nexuses.at(tag_map.at(*dest).second);
-			dest = get_destination(data, nexus);
+		while(tag_map[*dst]->t == NXS){
+			*dst = get_destination(story, *tag_map[*dst]);
 		}
 
-		data.story.story_location = *dest;
-		paragraph& new_location = data.story.paragraphs.at(tag_map.at(*dest).second);
+		story.location = *dst;
+		paragraph& new_location = tag_map[*dst];
 
 		if(!new_location.changes.empty()){
-			apply_changes(data, new_location.changes);
+			apply_changes(story, new_location.changes);
 		}
 
-		update_UI(data, main_assets, gui);
+		update_UI(story, main_assets, gui);
 		//save_game(data);
 	}
 	return 0;

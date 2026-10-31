@@ -40,9 +40,9 @@ struct styling {
 
 struct option {
 	vector<glyph> prompt;
-	char* dst_label;
+	struct string dst_label;
 	story_vars reveal_conds;
-	story_vars changes;
+	sv_changes changes;
 	txtr_info txtr_data;
 };
 
@@ -50,7 +50,7 @@ struct paragraph {
 	LCTN_T t;
 
 	vector<glyph> text;
-	story_vars changes;
+	sv_changes changes;
 	vector<option> options;
 	txtr_info txtr_data;
 };
@@ -70,7 +70,7 @@ struct nexus {
 struct story {
 	std::unordered_map<struct string, void*, string_hash> tag_map;
 	vector<glyph> used_glyphs;
-	char* location;
+	struct string location;
 	story_vars data_groups;
 	std::unordered_map<struct string, struct string, string_hash> dg_aliases;
 };
