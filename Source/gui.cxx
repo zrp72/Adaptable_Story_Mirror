@@ -1,5 +1,67 @@
-#include "gui.h"
 #include "utils.h"
+#include "gui.h"
+
+
+void
+UI_element::determine_area(){
+	float min_x = 1;
+	float min_y = 1;
+	float top_w = 0;
+	float top_h = 0;
+
+	auto resize = [&](float x, float y, float w, float h){
+		min_x = std::min(min_x, x);
+		min_y = std::min(min_y, y);
+		top_w = std::max(top_w, x + w);
+		top_h = std::max(top_h, y + h);
+	};
+
+	for(auto &tex : this->texture){
+		auto t = tex.dstrect;
+		resize(t.relative_x, t.relative_y, t.relative_w, t.relative_h);
+	}
+	for(auto &txt : this->text){
+		auto& c = txt.pos;
+		auto& m = txt.mask;
+		resize(c.relative_x, c.relative_y, c.relative_w, m.relative_h);
+	}
+
+	this->area = {min_x, min_y, top_w - min_x, top_h - min_y};
+}
+
+assets::assets(gui_core& gui, char* rel_path){
+
+	std::filesystem::path original_path(std::filesystem::current_path());
+	std::filesystem::current_path(original_path / rel_path);
+
+	auto load_texture = [&](std::string texture_name, const char* path){
+		SDL_Texture* texture = IMG_LoadTexture(gui.renderer, path);
+		if(!texture){
+			std::cerr << "Failed to load texture: " << SDL_GetError() << '\n';
+		}
+		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+		this->textures[texture_name] = texture;
+	};
+
+	//TODO: Load all asset files
+	load_texture("option_border", "option_border.png");
+
+	std::filesystem::current_path(original_path);
+}
+
+void
+assets::add_element(std::string tag, UI_element& e, gui_core& gui){
+	e.determine_area();
+	elements.insert_or_assign(tag, e);
+}
+
+SDL_Rect
+assets::get_texture_srcrect(std::string tag){
+	float width, height;
+	SDL_GetTextureSize(textures[tag], &width, &height);
+	SDL_Rect srcrect(0, 0, width, height);
+	return srcrect;
+}
 
 void
 resize_rect(relative_rect &rect, SDL_Window* window){
@@ -101,3 +163,120 @@ render_element(UI_element& obj, gui_core& gui, assets& assets){
 	SDL_SetRenderClipRect(gui.renderer, NULL);
 }
 
+int
+create_story_display(gui_core& gui, assets& assets, struct story& story){
+	UI_element element;
+	void* location = story.tag_map[story.location];
+	auto& story_text = location->text;
+	auto& border = location->txtr_data.border;
+	if(main_assets.textures.contains(border)){
+		fprintf(stderr, "Attempted to use unloaded texture: %s\n", border.c_str());
+		exit(1);
+	}
+
+	element.text.push_back(relative_text(
+		story_text,
+		relative_rect(.15, .1, .7, .5),
+		relative_rect(.15, .1, .7)
+	));
+
+	element.texture.push_back(relative_texture(
+		border,
+		main_assets.get_texture_srcrect(border),
+		relative_rect(x_pos -.05, y_pos, .4, .05),
+		[=](struct story& data, assets& assets, gui_core& gui){}
+	));
+
+	for(auto& g : element.text[0].text.glyphs){
+		debug(char(g.unicode));
+	}
+	debug('\n');
+
+	element.visible = true;
+	assets.add_element("story_display", element, gui);
+	return 0;
+}
+
+int
+create_option_display(gui_core& gui, assets& main_assets, struct story& story){
+	UI_element element;
+
+	int column = 0;
+	int row = 0;
+	float column_w = .3;
+	float column_h = .05;
+
+	void* location = story.tag_map[story.location];
+	if(location->t == NXS){
+		debug("Story location set to nexus? " << story.story_location << '\n');
+		return 1;
+	}
+
+	int iteration = 1;
+	for(auto& option : location->options){
+		debug("Option iteration: " << iteration << '\n');
+		if(column > 1){row += 1; column = 0;}
+		if(!option.reveal_conditions.empty()){
+			if(!compare_variables_against_player(story, option.reveal_conditions)){
+				iteration += 1;
+				continue;
+			}
+		}
+
+		auto& border = option->txtr_data.border;
+		if(main_assets.textures.contains(border)){
+			fprintf(stderr, "Attempted to use unloaded texture: %s\n", border.c_str());
+			exit(1);
+		}
+
+		for(auto& t : option.prompt){
+			debug(char(t.unicode));
+		}
+		debug('\n');
+
+		float x_pos = .15 + .4 * column;
+		float y_pos = .7 + .1 * row;
+		relative_rect mask(x_pos, y_pos, column_w, column_h);
+
+		auto& prompt = option.prompt;
+		element.text.push_back(relative_text(
+			prompt,
+			mask,
+			relative_rect(x_pos, y_pos, .3)
+		));
+
+		element.texture.push_back(relative_texture(
+			border,
+			main_assets.get_texture_srcrect(border),
+			relative_rect(x_pos -.05, y_pos, .4, .05),
+			[=](struct story& data, assets& assets, gui_core& gui){
+				progress_story(data, assets, gui, iteration);
+			}
+		));
+
+		column += 1;
+		iteration += 1;
+	}
+
+	element.mask = relative_rect(.1, .7, .85, .3);
+	element.visible = true;
+
+	debug("Amount of options: " << element.text.size() << '\n');
+
+	main_assets.add_element("option_display", element, gui);
+
+	return 0;
+}
+
+int
+create_UI_elements(gui_core& gui, assets& assets, struct story& story){
+
+	create_story_display(gui, assets, story);
+	create_option_display(gui, assets, story);
+
+	for(auto& element : assets.elements){
+		resize_element(element.second, gui, assets);
+	}
+
+	return 0;
+}

@@ -1,3 +1,5 @@
+#ifndef story_parser_header
+#define story_parser_header 1
 #include <charconv>
 #include <cctype>
 #include <string>
@@ -11,11 +13,20 @@ enum LCTN_T{
 	NXS
 };
 
-typedef data_group = std::unordered_map<struct string, int, cstring_hash>;
-typedef story_vars = std::unordered_map<struct string, data_group, string_hash>;
+struct data_change {
+	struct string dg;
+	struct string var;
+	int op;
+	int val;
+};
+using sv_changes = std::vector<data_change>;
+using data_group = std::unordered_map<struct string, int, string_hash>;
+using story_vars = std::unordered_map<struct string, data_group, string_hash>;
 
 struct txtr_info {
 	char* border;
+
+	//TODO: Implement animations
 	char* entry_anim;
 	char* exit_anim;
 };
@@ -41,7 +52,7 @@ struct paragraph {
 	vector<glyph> text;
 	story_vars changes;
 	vector<option> options;
-	txtr_info texture_data;
+	txtr_info txtr_data;
 };
 
 struct nexus {
@@ -65,4 +76,6 @@ struct story {
 };
 
 struct story* parse_story_file(char* filepath);
+
+#endif
 

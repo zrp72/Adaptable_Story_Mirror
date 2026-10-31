@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-//#include "instruction_loader.h"
+#include "instruction_loader.h"
 
 void
 load_ral(const char* filename, struct RAL* config){

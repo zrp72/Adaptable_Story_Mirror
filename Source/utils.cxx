@@ -85,6 +85,21 @@ get_string(size_t cap){
 	return string;
 }
 
+struct string
+duplicate_string(struct string* o){
+	struct string n = *o;
+	n.text = strdup(o->text);
+	return n;
+}
+
+void
+clear_string(struct string* s){
+	if(s->len > 0){
+		memset(s->text, '\0', s->len);
+	}
+	s->len = 0;
+}
+
 void
 dynamic_append(struct string* string, char c){
 	if((string->cap - string->len) <= 1){

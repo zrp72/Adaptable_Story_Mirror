@@ -10,43 +10,26 @@
 
 #define debug(x)  std::cout << x
 
+//Returns true if sv1 has all the variables of sv2 at the same or higher values
 bool
-compare_variables_against_player(game_data& data, story_variables& variables){
-	auto& items = data.items;
-	auto& attributes = data.player.attributes;
-	auto& decisions = data.player.decisions;
-	auto& inv = data.player.inventory;
+compare_sv(story_vars& sv1, story_vars& sv2){
 
 	bool viable = true;
-	for(auto& condition : variables.stats_and_items){
-		if(items.contains(condition.first)){
-			if(!inv.contains(condition.first)){
-				viable = false;
-			}
-		} else {
-			if(attributes.contains(condition.first)){
-				viable = attributes.at(condition.first) >= condition.second;
-			} else {
-				debug("Assuming unassigned attribute: " << condition.first << '\n');
-				viable = false;
+	for(const auto &[dgn, dg] : sv1){
+		if(sv2.contains(dgn){
+			for(const auto& [var, val] : dg){
+				if(sv2[dgn].contains(var)){
+					viable = val >= sv2[dgn][var];
+				}
 			}
 		}
 		if(!viable){break;}
-	}
-	
-	if(viable){
-		for(auto& decision : variables.decisions){
-			if(!decisions.contains(decision)){
-				viable = false;
-				break;
-			}
-		}
 	}
 	return viable;
 }
 
 std::string*
-get_destination(game_data &data, nexus &nexus){
+get_destination(story &story, nexus &nexus){
 
 	nexus.visits += 1;
 
@@ -56,22 +39,14 @@ get_destination(game_data &data, nexus &nexus){
 	for(auto& eg : nexus.exits){
 
 		bool viable = true;
-		auto it = eg.conditions.stats_and_items.begin();
-
-		while(it != eg.conditions.stats_and_items.end()){
-			if(it->first == "visits" || it->first == "visit"){
-				if(nexus.visits < it->second){
-					viable = false;
-				}
-				eg.conditions.stats_and_items.erase(it);
-				break;
+		if(eg.conds.contains(reserved)){
+			if(eg.conds[reserved].contains(visits)){
+				viable = eg.conds[reserved][visits] > nexus.visits;
 			}
-			++it;
 		}
-
 		if(!viable){continue;}
 
-		if(!compare_variables_against_player(data, eg.conditions)){
+		if(!compare_sv(eg.conds, story.data_groups)){
 			continue;
 		}
 
@@ -89,58 +64,32 @@ get_destination(game_data &data, nexus &nexus){
 	return &exits.at(exit);
 }
 
-//TODO: Move this function into class item_container
 void
-alter_inventory(character& player, auto& change){
-	auto& inventory = player.inventory;
-	int open_inventory_space = player.inventory.max_size - inventory.used_space;
-
-	//TODO: Account for stacking
-	if((open_inventory_space - change.second) < 0){
-		debug("Overburdened" << '\n');
-	}
-
-	if(inventory.contains(change.first)){
-		inventory.at(change.first) += change.second;
-		debug(change.first << " + " << change.second << '\n');
-	}else{
-		inventory.items.emplace(change.first, change.second);
-		debug("New item: " << change.first << '\n');
-	}
-}
-
-//handles option and paragraph change maps, so auto is NEEDED
-void
-apply_changes(game_data &data, story_variables& changes){
-	for (const auto& change : changes.stats_and_items) {
-		if(data.items.contains(change.first)){
-			alter_inventory(data.player, change);
-		}else{
-			if(!data.player.attributes.contains(change.first)){
-
-				debug("New attribute created: " << change.first << '\n');
-				data.player.attributes[change.first] = change.second;
-
-			}else{
-
-				debug(change.first << ": " << data.player.attributes.at(change.first) << '\n');
-				data.player.attributes.at(change.first) += change.second;
-
-			}
-			debug(change.first << ": " << data.player.attributes.at(change.first) << '\n');
+apply_changes(struct story &story, sv_changes& changes){
+	for(const auto& c : changes){
+		if(!story.data_groups.contains(c.dg)){
+			fprintf(stderr, "Attempted to alter nonexistent data group: %s", dgn.text);
+			exit(1);
 		}
-	}
-
-	for (const auto& change : changes.decisions) {
-
-		data.player.decisions.emplace(change, true);
-		debug("Added decision: " << change << '\n');
-
+		if(!story.data_groups[c.dg].contains(c.var)){
+			story.data_groups[c.dg][c.var] = 0;
+		}
+		switch(c.op){
+		case '=':
+			story.data_groups[c.dg][c.var] = c.val;
+			continue;
+		case '+':
+			story.data_groups[c.dg][c.var] + c.val;
+			continue;
+		case '-':
+			story.data_groups[c.dg][c.var] - c.val;
+			continue;
+		}
 	}
 }
 
 int
-update_UI(game_data& data, assets& assets, gui_core& gui){
+update_UI(struct story& data, assets& assets, gui_core& gui){
 
 	create_story_display(gui, assets, data);
 	resize_element(assets.elements.at("story_display"), gui, assets);
