@@ -20,8 +20,8 @@ struct data_change {
 	int val;
 };
 using sv_changes = std::vector<data_change>;
-using data_group = std::unordered_map<struct string, int, string_hash>;
-using story_vars = std::unordered_map<struct string, data_group, string_hash>;
+using data_group = std::unordered_map<struct string, int, string_hash, string_equal>;
+using story_vars = std::unordered_map<struct string, data_group, string_hash, string_equal>;
 
 struct txtr_info {
 	char* border;
