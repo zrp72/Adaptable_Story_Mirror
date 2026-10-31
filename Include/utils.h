@@ -18,13 +18,14 @@ using vector = std::vector<x>;
 void* xmalloc(size_t bytes);
 void* xcalloc(size_t amount, size_t size);
 void* xrealloc(void*, size_t new_size);
- 
+
+/*
 struct umn {
 	void* key;
 	void* value;
 	struct umn* next;
 };
-/*
+
 typedef (size_t)(*um_hashfunc)(void*);
 struct umap {
 	umn** buckets;
@@ -34,7 +35,7 @@ struct umap {
 
 	um_hashfunc hash;
 };
-*/
+
 int um_init(struct umap*);
 int um_insert(umap*,
 	void* key, void* val 
@@ -45,10 +46,12 @@ void um_remove(umap*,
 bool um_contains(umap*,
 	void* key
 );
+
 size_t string_hash(void*);
 size_t char_hash(void*);
 size_t int_hash(void*);
 size_t bool_hash(void*);
+*/
 
 struct string {
 	char* text;
@@ -63,9 +66,9 @@ struct string_hash {
 	}
 };
 struct string_equal {
-    bool operator()(const string* a, const string* b) const noexcept {
-        return std::strcmp(a->text, b->text) == 0;
-    }
+	bool operator()(const string& a, const string& b) const noexcept {
+		return std::strcmp(a.text, b.text) == 0;
+	}
 };
 struct char_ptr_hash {
 	size_t operator()(char* s) const noexcept {
@@ -73,9 +76,9 @@ struct char_ptr_hash {
 	}
 };
 struct char_ptr_equal {
-    bool operator()(const char* a, const char* b) const noexcept {
-        return std::strcmp(a, b) == 0;
-    }
+	bool operator()(const char* a, const char* b) const noexcept {
+		return std::strcmp(a, b) == 0;
+	}
 };
 ///////////////////////////////////////////////////////
 #define FULL_WS 1<<0
