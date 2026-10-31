@@ -1,6 +1,6 @@
 #include <iostream>
 #include <filesystem>
-#include <sdl3/SDL_filesystem.h>
+#include <SDL3/SDL_filesystem.h>
 
 #include "utils.h"
 #include "instruction_loader.h"

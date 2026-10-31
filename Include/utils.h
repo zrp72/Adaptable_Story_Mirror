@@ -57,15 +57,25 @@ struct string {
 	uint8_t ec;
 };
 //THIS IS PLACEHOLDER UNTIL FULL C UMAP IMPLEMENTATION
-class string_hash {
+struct string_hash {
 	size_t operator()(const string& s) const noexcept {
 		return std::hash<std::string_view>{}(s.text);
 	}
 };
-class char_ptr_hash {
+struct string_equal {
+    bool operator()(const string* a, const string* b) const noexcept {
+        return std::strcmp(a, b) == 0;
+    }
+};
+struct char_ptr_hash {
 	size_t operator()(char* s) const noexcept {
 		return std::hash<std::string_view>{}(s);
 	}
+};
+struct char_ptr_equal {
+    bool operator()(const char* a, const char* b) const noexcept {
+        return std::strcmp(a, b) == 0;
+    }
 };
 ///////////////////////////////////////////////////////
 #define FULL_WS 1<<0
