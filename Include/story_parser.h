@@ -75,7 +75,8 @@ struct story {
 	std::unordered_map<struct string, struct string, string_hash> dg_aliases;
 };
 
-struct story* parse_story_file(char* filepath);
+struct story* parse_story_file(const char* filepath, char* start_chapter);
+void free_story(struct story*);
 
 #endif
 

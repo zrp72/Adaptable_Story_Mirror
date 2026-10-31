@@ -1,5 +1,5 @@
 #ifndef inst_load_header
-#define inst_load_header
+#define inst_load_header 1
 
 struct RAL /* Runtime Access Locations */
 {

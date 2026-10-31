@@ -2,6 +2,8 @@
 #define gui_header 1
 
 #include <iostream>
+#include <functional>
+#include <map>
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <algorithm>
@@ -116,7 +118,7 @@ class assets {
 	std::unordered_map<glyph, rasterized_glyph, glyph_hash> glyphs;
 	std::map<std::string, UI_element> elements;
 
-	assets(gui_core&);
+	assets(gui_core&, char*);
 
 	~assets(){
 		for(auto& [tag, t] : textures){
