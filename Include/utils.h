@@ -1,5 +1,6 @@
 #ifndef ASM_utils
 #define ASM_utils 1
+
 #include <string>
 #include <filesystem>
 #include <iostream>
@@ -7,7 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#include <inttypes>
+#include <cinttypes>
 
 #define debug(x) std::cout<<x
 
@@ -23,45 +24,45 @@ struct umn {
 	void* value;
 	struct umn* next;
 };
+/*
 typedef (size_t)(*um_hashfunc)(void*);
 struct umap {
-	/*
 	umn** buckets;
 	int capacity;
 	int hash_count;
 	float grow_threshold;
 
 	um_hashfunc hash;
-	*/
 };
-int um_init(struct umap*)
+*/
+int um_init(struct umap*);
 int um_insert(umap*,
-	void* key, void* val, 
+	void* key, void* val 
 );
 void um_remove(umap*,
-	void* key,
+	void* key
 );
 bool um_contains(umap*,
-	void* key,
+	void* key
 );
 size_t string_hash(void*);
 size_t char_hash(void*);
 size_t int_hash(void*);
 size_t bool_hash(void*);
 
-struct {
+struct string {
 	char* text;
 	size_t len;
 	size_t cap;
 	uint8_t ec;
-} string;
+};
 //THIS IS PLACEHOLDER UNTIL FULL C UMAP IMPLEMENTATION
-struct string_hash {
-	size_t operator()(const struct string& s) const noexcept {
+class string_hash {
+	size_t operator()(const string& s) const noexcept {
 		return std::hash<std::string_view>{}(s.text);
 	}
 };
-struct char_ptr_hash {
+class char_ptr_hash {
 	size_t operator()(char* s) const noexcept {
 		return std::hash<std::string_view>{}(s);
 	}

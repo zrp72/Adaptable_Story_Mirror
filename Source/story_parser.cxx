@@ -137,37 +137,36 @@ finished:
 }
 
 int
-parse_fint(FILE* f, int* trg, int op){
+get_fint(FILE* f, int* trg, int op){
 	int a;
+	fscanf(f, "%8d", &a);
 	switch(op){
 	case '+':
-		fscanf(f, "%d", &a);
 		*trg += a;
 		return fgetc(f);
 	case '-':
-		fscanf(f, "%d", &a);
 		*trg -= a;
 		return fgetc(f);
 	case '=':
-		fscanf(f, "%d", &a);
 		*trg = a;
 		return fgetc(f);
 	}
 	fprintf(stderr, "Invalid operation type: \"%c\"\n", op);
 }
 
-
 int
 add_dg_var(FILE* f, data_group* dg, char* ends){
 	//TODO: This is gonna run a lot of times,
 	//figure out a way to only call mappend once
-	struct string dne = get_str(8);
+	struct string dne = get_string(8);
 	dne.text = "+-=";
 	dynamic_mappend(dne, ends);
 
-	struct string name = get_str(8);
-	rv = gfss_tsc(f, &name, dne.text)
+	struct string name = get_string(8);
+	rv = gfss_tsc(f, &name, dne.text);
 	trim_tw(name);
+	free_string(&dne);
+
 	if(!dg->contains(name)){
 		dg->at(name) = 0;
 	}
@@ -175,55 +174,22 @@ add_dg_var(FILE* f, data_group* dg, char* ends){
 		dg->at(name) += 1;
 		return rv;
 	}
-	return parse_fint(f, &dg->at(name), rv);
-}
-
-//TODO: Factor
-int
-edit_global_sv(FILE* f, story_vars* sv, char* ends){
-	int rv;
-	struct string cdg = get_str(8);
-	
-	while(!list_contains_c(ends, rv = fmove_pw(f))){
-
-		if(rv == '<'){
-			gfss_tsc(f, &cdg, ">");
-			if(!*sv.contains(cdg)){
-				printf("Attempted to access nonexistent data group: %s\n.", cdg.text);
-				exit(1);
-			}
-		} else if(cdg.len == 0) {
-			printf("Active data group not declared during sv parse.");
-			return -1;
-		} else if(rv == ','){
-			fseek(f, 1, SEEK_CUR);
-		} else {
-			if(')' == add_dg_var(FILE* f, &sv->at(cdg), ",)")){
-				break;
-			}
-		}
-	}
-	if(sv->empty()){
-		printf("No story variables found to parse.");
-	}
-	return rv;
+	return get_fint(f, &dg->at(name), rv);
 }
 
 int
 edit_local_sv(FILE* f, story_vars* sv, char* ends){
 	int rv;
-	struct string cdg = get_str(8);
-	struct string dne = get_str(8);
-	dne.text = "+-=,";
-	dynamic_mappend(dne, ends);
+	struct string cdg = get_string(8);
 	
 	while(!list_contains_c(ends, rv = fmove_pw(f))){
 
 		if(rv == '<'){
-			gfss_tsc(f, &cdg, ">)");
+			gfss_tsc(f, &cdg, ">");
 			if(!sv->contains(cdg)){
+				struct string n = duplicate_string(cdg);
 				data_group dg();
-				sv->insert(cdg, dg);
+				sv->insert(n, dg);
 			}
 		} else if(cdg.len == 0) {
 			printf("Active data group not declared during sv parse.");
@@ -239,6 +205,7 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 	if(sv.empty()){
 		printf("No story variables found to parse.");
 	}
+	free_string(cdg);
 	return rv;
 }
 
@@ -246,7 +213,13 @@ void
 remove_marker(FILE* f, struct story* s){
 	struct string marker = get_string(8);
 	gfss_tsc(f, marker, '\n');
-	s->tag_map.erase(marker);
+	if(s->tag_map.contains(marker)){
+		auto i = s->tag_map.find(marker);
+		free_string(i.first);
+		free_string(i.second);
+		s->tag_map.erase(marker);
+	}
+	free_string(marker);
 }
 
 void
@@ -279,10 +252,16 @@ parse_ext_grp(FILE* f, struct exit_group* eg){
 	struct string e = get_string(8);
 	while('\n' != fmove_pw_sl(f)){
 		rv = gfss_tsc(f, &e, "\n]");
+		if(e.len > 0){
+			eg->exits.push_back(e);
+		}
 		if(rv == ']'){
 			break;
 		}
-		eg->exits.push_back(e);
+		e = get_string(8);
+	}
+	if(e.len == 0){
+		free_string(e);
 	}
 }
 
@@ -304,7 +283,7 @@ parse_nexus(FILE* f, story* s){
 	while(']' != fmove_pw(f) && 
 			']' != edit_local_sv(f, &eg.conds, ":]")
 	){
-		fmove_nl(f);
+		fmove_pw(f);
 		parse_ext_grp(f, &eg);
 		nxs->exits.push_back(eg);
 		eg = get_ext_group();
@@ -322,7 +301,7 @@ free_nxs(struct nexus* nxs){
 void
 create_data_group(FILE* f, struct story* s){
 	struct string name = get_string(8);
-	gfss_tsc(f, name, "\n";
+	gfss_tsc(f, name, "\n");
 	data_group dg();
 	sv->data_groups[name] = dg;
 }
@@ -338,6 +317,42 @@ add_dg_alias(FILE* f, struct story* s){
 	gfss_tsc(f, alias, "\n");
 	s->dg_aliases[alias] = dg;
 }
+
+#define TOKEN_LENGTH 4
+/*
+#bold(1)
+#itlc(1)
+#pg_b
+#op_b
+#font(
+#rgba(255,255,255,255)
+*/
+
+long
+parse_change_number(struct string* s){
+	char* t = s->text;
+	if(t[TOKEN_LENGTH] != '('){
+		fprintf(stderr, "Invalid change: %s\n", t);
+		exit(1);
+	}
+	char* end;
+	long v = strtol(t+TOKEN_LENGTH+1, &end, 10);
+	if(*end != ')'){
+		fprintf(stderr, "Invalid change: %s\n", t);
+		exit(1);
+	}
+	return v;
+}
+
+void
+update_styling(const struct styling* s, struct string* change){
+	char* t = change->text;
+	if(0 == strncmp(t, "bold", 4)){
+		s->bold = !!parse_change_number(s);
+	} else if(change->text == "itlc") {
+		s->italic = !s->italic;
+		
+		assert(x < 256);
 
 void
 parse_option(FILE* f, struct story* s){
@@ -372,6 +387,12 @@ parse_story_file(const char* filepath, char* start_chapter){
 			continue;
 		case '#':
 			define_marker(f, &style.markers);
+			continue;
+		case '|':
+			struct string alteration = get_string(8);
+			gfss_tsc(f, &alteration, "\n");
+			update_style(&style, &alteration);
+			free_string(alteration);
 			continue;
 		case '@':
 			create_data_group(f, story);
