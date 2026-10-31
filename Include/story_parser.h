@@ -47,7 +47,7 @@ struct option {
 };
 
 struct paragraph {
-	struct LCTN_T t;
+	LCTN_T t;
 
 	vector<glyph> text;
 	story_vars changes;
@@ -56,7 +56,7 @@ struct paragraph {
 };
 
 struct nexus {
-	struct LCTN_T t;
+	LCTN_T t;
 
 	struct exit_group {
 		story_vars conds;
