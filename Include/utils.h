@@ -64,7 +64,7 @@ struct string_hash {
 };
 struct string_equal {
     bool operator()(const string* a, const string* b) const noexcept {
-        return std::strcmp(a, b) == 0;
+        return std::strcmp(a->text, b->text) == 0;
     }
 };
 struct char_ptr_hash {
