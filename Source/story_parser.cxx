@@ -527,7 +527,7 @@ parse_sv_changes(FILE* f, sv_changes* svc){
 			fseek(f, 1, SEEK_CUR);
 		} else {
 			struct data_change dc;
-			parse_sv_change(&cdg, &dc, f);
+			parse_sv_change(f, &cdg, &dc);
 		}
 	}
 	if(sv.empty()){
