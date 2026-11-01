@@ -259,7 +259,7 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 		} else if(rv == ','){
 			fseek(f, 1, SEEK_CUR);
 		} else {
-			if(')' == add_dg_var(FILE* f, &sv->at(cdg), ",)")){
+			if(')' == add_dg_var(f, &sv->at(cdg), ",)")){
 				break;
 			}
 		}
