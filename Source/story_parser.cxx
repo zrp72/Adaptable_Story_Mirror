@@ -584,6 +584,11 @@ parse_option(
 	}
 }
 
+void
+free_option(struct option* o){
+	delete o;
+}
+
 struct paragraph*
 get_prg(){
 	struct paragraph* p = new paragraph();
