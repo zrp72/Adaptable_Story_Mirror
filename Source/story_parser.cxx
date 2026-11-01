@@ -75,10 +75,10 @@ list_contains_c(const char* list, char c){
 }
 
 int
-gss_tsc(const char* start, struct string* s, char* end){
+gss_tsc(const char* start, struct string* s, const char* ends){
 	int c;
 	while('\0' != (c = *start++)){
-		if(list_contains_c(end, c)){
+		if(list_contains_c(ends, c)){
 			break;
 		}
 		dynamic_append(s, c);
