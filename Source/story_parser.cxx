@@ -64,6 +64,21 @@ list_contains_c(char* list, char c){
 	return 0;
 }
 
+int
+gss_tsc(char* start, struct string* s, char* end){
+	int c;
+	while('\0' != (c = *start++)){
+		if(list_contains_c(end, c)){
+			break;
+		}
+		dynamic_append(string, c);
+	}
+	if(c == '\n'){
+		trim_tw(string);
+	}
+	return c;
+}
+
 //Get file substring to single char
 //Char* end is treated as a list of
 //single chars.
@@ -320,12 +335,13 @@ add_dg_alias(FILE* f, struct story* s){
 
 #define TOKEN_LENGTH 4
 /*
-#bold(1)
-#itlc(1)
-#pg_b
-#op_b
-#font(
-#rgba(255,255,255,255)
+|bold(1)
+|itlc(1)
+|font(arial)
+|rgba(255,255,255,255)
+|size(24)
+|pg_b(intricate)
+|op_b(intricate)
 */
 
 long
@@ -344,18 +360,71 @@ parse_change_number(struct string* s){
 	return v;
 }
 
+SDL_Color
+parse_rgba_change(struct string* s){
+	char* t = s->text;
+	if(t[TOKEN_LENGTH] != '('){
+		fprintf(stderr, "Invalid change: %s\n", t);
+		exit(1);
+	}
+	struct SDL_Color clr;
+	char* end;
+	//TODO: This can probably be done better
+	clr.r = strtol(t+TOKEN_LENGTH+1, &end, 10);
+	clr.g = strtol(end+1, &end, 10);
+	clr.b = strtol(end+1, &end, 10);
+	clr.a = strtol(end+1, &end, 10);
+	if(*end != ')'){
+		fprintf(stderr, "Invalid change: %s\n", t);
+		exit(1);
+	}
+	return clr;
+}
+
+std::string
+parse_change_text(struct string* s){
+	char* t = s->text;
+	if(t[TOKEN_LENGTH] != '('){
+		fprintf(stderr, "Invalid change: %s\n", t);
+		exit(1);
+	}
+	struct string c = get_string(8);
+	if('\n' == gss_tsc(t+TOKEN_LENGTH+1, &c, ")\n")){
+		fprintf(stderr, "Invalid change; missing close parenthesis: %s\n", t);
+	}
+	//This is only until glyphtext gets updated to struct string
+	std::string cs(c.text);
+	free_string(c);
+	return cs;
+}
+
 void
 update_styling(const struct styling* s, struct string* change){
 	char* t = change->text;
-	if(0 == strncmp(t, "bold", 4)){
-		s->bold = !!parse_change_number(s);
-	} else if(change->text == "itlc") {
-		s->italic = !s->italic;
-		
-		assert(x < 256);
+	if(0 == strncmp(t, "bold", TOKEN_LENGTH)){
+		s->glyph.bold = !!parse_change_number(change);
+	} else if(strncmp(t, "itlc", TOKEN_LENGTH) {
+		s->glyph.italic = !!parse_change_number(change);
+	} else if(strncmp(t, "font", TOKEN_LENGTH) {
+		s->glyph.font = parse_change_text(change);
+	} else if(strncmp(t, "rgba", TOKEN_LENGTH) {
+		s->glyph.color = parse_rgba_change(change);
+	} else if(strncmp(t, "size", TOKEN_LENGTH) {
+		s->glyph.size = parse_change_number(change);
+	} else if(strncmp(t, "pg_b", TOKEN_LENGTH) {
+		s->paragraph.border = parse_change_text(change);
+	} else if(strncmp(t, "op_b", TOKEN_LENGTH) {
+		s->option.border = parse_change_text(change);
+	}
+}
 
 void
 parse_option(FILE* f, struct story* s){
+
+}
+
+void
+parse_paragraph(FILE* f, struct story* s){
 
 }
 
@@ -391,7 +460,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 		case '|':
 			struct string alteration = get_string(8);
 			gfss_tsc(f, &alteration, "\n");
-			update_style(&style, &alteration);
+			update_styling(&style, &alteration);
 			free_string(alteration);
 			continue;
 		case '@':
