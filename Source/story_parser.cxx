@@ -339,7 +339,7 @@ parse_nexus(FILE* f, story* s){
 		fmove_pw(f);
 		parse_ext_grp(f, &eg);
 		nxs->exits.push_back(eg);
-		eg = get_ext_group();
+		eg = get_ext_grp();
 	}
 	if(nxs->exits.size() == 0){
 		printf("Nexus(%s) declared with zero exits.", tag.text);
