@@ -418,7 +418,7 @@ parse_change_text(struct string* s){
 }
 
 void
-update_styling(const struct styling* s, struct string* change){
+update_styling(struct styling* s, struct string* change){
 	char* t = change->text;
 	if(0 == strncmp(t, "bold", TOKEN_LENGTH)){
 		s->glyph.bold = !!parse_change_number(change);
