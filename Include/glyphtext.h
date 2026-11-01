@@ -33,8 +33,10 @@ class glyph {
 	glyph_styling style;
 
 	glyph(){}
-	glyph(uint32_t u, glyph_styling s)
-	: unicode(u), style(s){}
+	glyph(uint32_t u, glyph_styling& s)
+		: unicode(u), style(s){}
+	glyph(char u, glyph_styling& s)
+		: unicode(u), style(s){}
 
 	bool operator==(const glyph&) const;
 

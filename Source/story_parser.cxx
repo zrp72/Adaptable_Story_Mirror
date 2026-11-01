@@ -475,7 +475,7 @@ fread_glyphtext(
 					if( 0 != strncmp(change.text, "nwln", 4) ){
 						update_styling(s, &change);
 					} else {
-						cntr->push_back(glyph('\n', *s));
+						cntr->push_back(glyph('\n', s->glyph));
 					}
 					break;
 				}
