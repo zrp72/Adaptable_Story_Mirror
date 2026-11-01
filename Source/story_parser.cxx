@@ -40,7 +40,7 @@ if(c == key[pos]){
 		if(key[pos+1] == '\0'){
 return 1;
 		}
-		return 0;
+return 0;
 
 	} else if(isspace(c) && (key[pos-1] == '\n')){
 		//NOTE: All whitespace after a newline WILL be trimmed.
@@ -525,14 +525,19 @@ parse_sv_changes(FILE* f, sv_changes* svc){
 
 }
 
+struct option*
+get_option(story_vars* rc, txtr_data* td){
+	struct option* o = new option();
+	o->reveal_conds = *rc;
+	o->txtr_data = *td;
+}
+
 void
 parse_option(
 	FILE* f, struct story* s,
 	struct styling* style, story_vars* conds
 ){
-	struct option o;
-	o.reveal_conds = *conds;
-	o.txtr_data = style.option;
+	struct option* o = get_option(conds, &style->option);
 
 	struct string base = get_string(8)
 	fmove_pw(f);
@@ -554,9 +559,9 @@ parse_option(
 		fmove_pw(f);
 	}
 
-	fread_glyphtext(f, &o.prompt, style, "\n");
+	fread_glyphtext(f, &o->prompt, style, "\n");
 	s->used_glyphs.insert(s->used_glyphs.end(),
-		o.prompt.begin(), o.prompt.end()
+		o->prompt.begin(), o->prompt.end()
 	);
 
 	if(s->tag_map.contains(base) && s->tag_map[base]->t == PRG){
@@ -606,6 +611,9 @@ parse_paragraph(
 
 void
 free_prg(struct paragraph* p){
+	for(auto& o : value.options){
+		free_option(o);
+	}
 	delete p;
 }
 

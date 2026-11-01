@@ -51,7 +51,7 @@ struct paragraph {
 
 	vector<glyph> text;
 	sv_changes changes;
-	vector<option> options;
+	vector<struct option*> options;
 	txtr_info txtr_data;
 };
 
