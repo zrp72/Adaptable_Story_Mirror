@@ -273,7 +273,7 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 
 struct nexus*
 get_nxs(){
-	struct nexus* n = new *n();
+	struct nexus* n = new nexus();
 	n->visits = 0;
 	n->t = NXS;
 	return n;
