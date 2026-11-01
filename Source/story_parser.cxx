@@ -530,7 +530,7 @@ parse_sv_changes(FILE* f, sv_changes* svc){
 			parse_sv_change(f, &cdg, &dc);
 		}
 	}
-	if(sv.empty()){
+	if(svc.empty()){
 		printf("No story variables found to parse.");
 	}
 	free_string(cdg);
