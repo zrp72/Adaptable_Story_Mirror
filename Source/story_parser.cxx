@@ -462,7 +462,7 @@ fread_glyphtext(
 		if(list_contains_c(ends, c)){
 			break;
 		}
-		dynamic_append(cache, c);
+		dynamic_append(&cache, c);
 		for(const auto& [marker, change] : s->markers){
 			int i = 0;
 			for( int rv = 0; -1 != (rv = match_key(
