@@ -510,7 +510,7 @@ parse_sv_change(FILE* f, struct string* dg, struct data_change* dc){
 void
 parse_sv_changes(FILE* f, sv_changes* svc){
 	int c;
-	struct string cdg = get_str(8);
+	struct string cdg = get_string(8);
 	
 	while( ')' != (c = fmove_pw(f)) ){
 
