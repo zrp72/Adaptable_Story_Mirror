@@ -86,6 +86,7 @@ struct string get_string(size_t cap);
 void free_string(struct string*);
 struct string duplicate_string(struct string*);
 void trim_tw(struct string*);
+void clear_string(struct string*);
 void dynamic_append(struct string*, char);
 void dynamic_mappend(struct string*, const char*);
 void dynamic_sappend(struct string*, const char*, int, int);
