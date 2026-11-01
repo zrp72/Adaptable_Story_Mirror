@@ -303,18 +303,16 @@ parse_ext_grp(FILE* f, struct exit_group* eg){
 
 	struct string e = get_string(8);
 	while('\n' != fmove_pw_sl(f)){
-		rv = gfss_tsc(f, &e, "\n]");
+		int c = gfss_tsc(f, &e, "\n]");
 		if(e.len > 0){
-			eg->exits.push_back(e);
+			eg->exits.push_back( duplicate_string(e) );
 		}
-		if(rv == ']'){
+		if(c == ']'){
 			break;
 		}
-		e = get_string(8);
+		clear_string(e);
 	}
-	if(e.len == 0){
-		free_string(e);
-	}
+	free_string(e);
 }
 
 void
