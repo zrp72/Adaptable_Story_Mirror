@@ -422,17 +422,17 @@ update_styling(struct styling* s, struct string* change){
 	char* t = change->text;
 	if(0 == strncmp(t, "bold", TOKEN_LENGTH)){
 		s->glyph.bold = !!parse_change_number(change);
-	} else if(strncmp(t, "itlc", TOKEN_LENGTH) {
+	} else if( strncmp(t, "itlc", TOKEN_LENGTH) ) {
 		s->glyph.italic = !!parse_change_number(change);
-	} else if(strncmp(t, "font", TOKEN_LENGTH) {
+	} else if( strncmp(t, "font", TOKEN_LENGTH) ) {
 		s->glyph.font = parse_change_text(change);
-	} else if(strncmp(t, "rgba", TOKEN_LENGTH) {
+	} else if( strncmp(t, "rgba", TOKEN_LENGTH) ) {
 		s->glyph.color = parse_rgba_change(change);
-	} else if(strncmp(t, "size", TOKEN_LENGTH) {
+	} else if( strncmp(t, "size", TOKEN_LENGTH) ) {
 		s->glyph.size = parse_change_number(change);
-	} else if(strncmp(t, "pg_b", TOKEN_LENGTH) {
+	} else if( strncmp(t, "pg_b", TOKEN_LENGTH) ) {
 		s->paragraph.border = parse_change_text(change);
-	} else if(strncmp(t, "op_b", TOKEN_LENGTH) {
+	} else if( strncmp(t, "op_b", TOKEN_LENGTH) ) {
 		s->option.border = parse_change_text(change);
 	} else {
 		fprintf(stderr, "INVALID CHANGE \"%s\"\n", change->text);
