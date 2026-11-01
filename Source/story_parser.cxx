@@ -298,7 +298,7 @@ get_ext_grp(){
 	return eg;
 }
 
-int
+void
 parse_ext_grp(FILE* f, struct exit_group* eg){
 
 	struct string e = get_string(8);
@@ -308,11 +308,12 @@ parse_ext_grp(FILE* f, struct exit_group* eg){
 			eg->exits.push_back( duplicate_string(&e) );
 		}
 		if(c == ']'){
+			ungetc(c, f);
 			break;
 		}
-		clear_string(e);
+		clear_string(&e);
 	}
-	free_string(e);
+	free_string(&e);
 }
 
 void
@@ -341,6 +342,7 @@ parse_nexus(FILE* f, story* s){
 	if(nxs->exits.size() == 0){
 		printf("Nexus(%s) declared with zero exits.", tag.text);
 	}
+	fseek(f, 1, SEEK_CUR);
 }
 
 void
