@@ -1,8 +1,6 @@
 #include "story_parser.h"
 #include "utils.h"
 
-//NEW CODE
-
 //File move past char
 //Returns false on EOF
 bool
@@ -24,7 +22,7 @@ fmove_pw(FILE* f){
 	int c;
 	while(EOF != (c = fgetc(f))){
 		if(!isspace(c)){
-			fungetc(c, f);
+			ungetc(c, f);
 			return c;
 		}
 	}
@@ -48,14 +46,14 @@ return 1;
 		//NOTE: All whitespace after a newline WILL be trimmed.
 		return 0;
 
-	} else if(ki > 0){
+	} else if(pos > 0){
 		return -1;
 	}
 	return -2;
 }
 
 int
-list_contains_c(char* list, char c){
+list_contains_c(const char* list, char c){
 	for(int i = 0; list[i] != '\0'; i++){
 		if(c == list[i]){
 			return 1;
@@ -93,7 +91,7 @@ gss_tsc(const char* start, struct string* s, char* end){
 //|Trims whitespace if string is
 //	terminated on \n
 int
-gfss_tsc(FILE* f, struct string* string, char* end){
+gfss_tsc(FILE* f, struct string* string, const char* end){
 	int c;
 	while(EOF != (c = fgetc(f))){
 		if(list_contains_c(end, c)){
@@ -172,20 +170,24 @@ use_fint(FILE* f, int* trg, int op){
 void
 create_data_group(FILE* f, struct story* s){
 	struct string name = get_string(8);
-	gfss_tsc(f, name, "\n");
-	data_group dg();
-	sv->data_groups[name] = dg;
+	gfss_tsc(f, &name, "\n");
+	data_group dg;
+	s->data_groups[name] = dg;
 }
 
 void
 add_dg_alias(FILE* f, struct story* s){
 	struct string dg = get_string(8);
-	if('\n' == gfss_tsc(f, dg, ":\n")){
+	if('\n' == gfss_tsc(f, &dg, ":\n")){
 		printf("dg alias ended at \\n before finding the alias: %s", dg.text);
 		return;
 	}
 	struct string alias = get_string(8);
-	gfss_tsc(f, alias, "\n");
+	gfss_tsc(f, &alias, "\n");
+	if( s->dg_aliases.contains(alias) ){
+		fprintf(stderr, "Attempted to redefine dg alias \"%s\"\n", alias.text);
+		exit(1);
+	}
 	s->dg_aliases[alias] = dg;
 }
 
@@ -194,12 +196,13 @@ add_dg_var(FILE* f, data_group* dg, char* ends){
 	//TODO: This is gonna run a lot of times,
 	//figure out a way to only call mappend once
 	struct string dne = get_string(8);
-	dne.text = "+-=";
-	dynamic_mappend(dne, ends);
+	//TODO: Figure out a way to chain mappend
+	dynamic_mappend(&dne, "+-=");
+	dynamic_mappend(&dne, ends);
 
 	struct string name = get_string(8);
-	rv = gfss_tsc(f, &name, dne.text);
-	trim_tw(name);
+	int rv = gfss_tsc(f, &name, dne.text);
+	trim_tw(&name);
 	free_string(&dne);
 
 	if(!dg->contains(name)){
@@ -213,25 +216,25 @@ add_dg_var(FILE* f, data_group* dg, char* ends){
 }
 
 void
-remove_marker(FILE* f, struct story* s){
+remove_marker(FILE* f, struct styling* s){
 	struct string marker = get_string(8);
-	gfss_tsc(f, marker, '\n');
-	if(s->tag_map.contains(marker)){
-		auto i = s->tag_map.find(marker);
-		free_string(i.first);
-		free_string(i.second);
-		s->tag_map.erase(marker);
+	gfss_tsc(f, &marker, "\n");
+	if(s->markers.contains(marker)){
+		auto i = s->markers.find(marker);
+		auto n = s->markers.extract(i);
+		free_string(&n.key());
+		free_string(&n.mapped());
 	}
-	free_string(marker);
+	free_string(&marker);
 }
 
 void
-define_marker(FILE* f, umap* db){
-	struct string* change = get_string(8)
-	gfss_tsc(f, change, ':');
-	struct string* marker = get_string(8);
-	gfss_tsc(f, marker, '\n');
-	um_insert(&style.umap, marker, change); 
+define_marker(FILE* f, struct styling* db){
+	struct string change = get_string(8);
+	gfss_tsc(f, &change, ":");
+	struct string marker = get_string(8);
+	gfss_tsc(f, &marker, "\n");
+	db->markers[marker] = change;
 	//TODO: Update how markers are stored so one marker
 	//		can apply multiple changes.
 }
@@ -246,9 +249,9 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 		if(rv == '<'){
 			gfss_tsc(f, &cdg, ">");
 			if(!sv->contains(cdg)){
-				struct string n = duplicate_string(cdg);
-				data_group dg();
-				sv->insert(n, dg);
+				struct string n = duplicate_string(&cdg);
+				data_group dg;
+				sv->insert({n, dg});
 			}
 		} else if(cdg.len == 0) {
 			printf("Active data group not declared during sv parse.");

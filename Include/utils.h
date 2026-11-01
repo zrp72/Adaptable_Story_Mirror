@@ -83,8 +83,12 @@ struct char_ptr_equal {
 #define FULL_WS 1<<0
 void init_string(struct string*, size_t cap);
 struct string get_string(size_t cap);
+void free_string(struct string*);
+struct string duplicate_string(struct string*);
+void trim_tw(struct string*);
 void dynamic_append(struct string*, char);
-void dynamic_mappend(struct string*, char*);
+void dynamic_mappend(struct string*, const char*);
+void dynamic_sappend(struct string*, const char*, int, int);
 
 std::string lowercase_string(std::string);
 std::string trim_string(std::string);

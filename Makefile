@@ -24,7 +24,7 @@ obj_files = \
 	Source/glyphtext.o \
 	Source/launch.o \
 	Source/progress.o \
-	Source/utils.o \
+	Source/utils.o
 
 %.o: %.cxx
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -std=c++20 -c $< -o $@

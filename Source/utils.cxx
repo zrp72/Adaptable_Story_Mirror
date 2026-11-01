@@ -84,11 +84,23 @@ get_string(size_t cap){
 	return string;
 }
 
+void
+free_string(struct string* s){
+	free(s->text);
+}
+
 struct string
 duplicate_string(struct string* o){
 	struct string n = *o;
 	n.text = strdup(o->text);
 	return n;
+}
+
+void
+trim_tw(struct string* s){
+	while( isspace(s->text[s->len-1]) ){
+		s->text[s->--len] = '\0';
+	}
 }
 
 void
@@ -114,13 +126,12 @@ dynamic_mappend(struct string* s, char* mc){
 }
 
 void
-dynamic_sappend(struct string* s, char* src, int i, int l){
+dynamic_sappend(struct string* s, const char* src, int i, int l){
 	while(i < (i + l)){
 		dynamic_append(s, src[i]);
-		b += 1;
+		i += 1;
 	}
 }
-
 
 int randomize_number(int range){
 	std::random_device random_device;
