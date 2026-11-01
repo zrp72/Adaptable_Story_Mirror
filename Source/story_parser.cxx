@@ -305,7 +305,7 @@ parse_ext_grp(FILE* f, struct exit_group* eg){
 	while('\n' != fmove_pw_sl(f)){
 		int c = gfss_tsc(f, &e, "\n]");
 		if(e.len > 0){
-			eg->exits.push_back( duplicate_string(e) );
+			eg->exits.push_back( duplicate_string(&e) );
 		}
 		if(c == ']'){
 			break;
