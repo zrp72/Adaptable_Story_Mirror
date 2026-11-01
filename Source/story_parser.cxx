@@ -252,7 +252,7 @@ define_marker(FILE* f, struct styling* db){
 }
 
 int
-edit_local_sv(FILE* f, story_vars* sv, char* ends){
+edit_local_sv(FILE* f, story_vars* sv, const char* ends){
 	int rv;
 	struct string cdg = get_string(8);
 	
