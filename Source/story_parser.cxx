@@ -192,7 +192,7 @@ add_dg_alias(FILE* f, struct story* s){
 }
 
 int
-add_dg_var(FILE* f, data_group* dg, char* ends){
+add_dg_var(FILE* f, data_group* dg, const char* ends){
 	//TODO: This is gonna run a lot of times,
 	//figure out a way to only call mappend once
 	struct string dne = get_string(8);
