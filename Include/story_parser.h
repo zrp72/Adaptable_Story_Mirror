@@ -55,14 +55,14 @@ struct paragraph {
 	txtr_info txtr_data;
 };
 
+struct exit_group {
+	story_vars conds;
+	vector<struct string> exits;
+};
+	
 struct nexus {
 	LCTN_T t;
 
-	struct exit_group {
-		story_vars conds;
-		vector<struct string> exits;
-	};
-	
 	vector<exit_group> exits;
 	int visits;
 };
