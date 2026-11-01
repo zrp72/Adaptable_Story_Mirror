@@ -24,7 +24,8 @@ using data_group = std::unordered_map<struct string, int, string_hash, string_eq
 using story_vars = std::unordered_map<struct string, data_group, string_hash, string_equal>;
 
 struct txtr_info {
-	char* border;
+	//This will be changed to struct string once other files are updated
+	std::string border;
 
 	//TODO: Implement animations
 	char* entry_anim;
