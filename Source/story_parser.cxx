@@ -463,7 +463,7 @@ fread_glyphtext(
 			break;
 		}
 		dynamic_append(&cache, c);
-		for(const auto& [marker, change] : s->markers){
+		for(auto& [marker, change] : s->markers){
 			int i = 0;
 			for( int rv = 0; -1 != (rv = match_key(
 					cache.text[cache.len - marker.len + i],
@@ -473,9 +473,9 @@ fread_glyphtext(
 				if(rv == 1){
 					cntr->resize(cntr->size() - marker.len);
 					if( 0 != strncmp(change.text, "nwln", 4) ){
-						update_styling(s, change);
+						update_styling(s, &change);
 					} else {
-						cntr->push_back(glyph('\n', s));
+						cntr->push_back(glyph('\n', *s));
 					}
 					break;
 				}
