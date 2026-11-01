@@ -662,11 +662,14 @@ parse_story_file(const char* filepath, char* start_chapter){
 
 void
 free_story(struct story* s){
-	for(const auto& [key, value] : s.tag_map){
+	for(auto& [key, value] : s.tag_map){
 		free_string(key);
 		if(value->t == NXS){
-			free_nxs(value);
+			free_nxs(&value);
 		} else if(value->t == PRG) {
+			for(auto& o : value.options){
+				free_option(o);
+			}
 			free_prg(value);
 		}	
 	}
