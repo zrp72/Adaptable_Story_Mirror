@@ -483,7 +483,7 @@ fread_glyphtext(
 		}
 		glyph g;
 		g.unicode = c;
-		g.style = s;
+		g.style = s->glyph;
 		cntr->push_back(g);
 	}
 	return c;
