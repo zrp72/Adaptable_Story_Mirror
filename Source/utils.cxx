@@ -75,7 +75,6 @@ init_string(struct string* string, size_t cap){
 	string->len = 0;
 	string->cap = cap;
 	string->text = xcalloc(cap, sizeof(char));
-	string->ec = FULL_WS;
 }
 
 struct string
@@ -94,9 +93,7 @@ duplicate_string(struct string* o){
 
 void
 clear_string(struct string* s){
-	if(s->len > 0){
-		memset(s->text, '\0', s->len);
-	}
+	s->text[0] = '\0';
 	s->len = 0;
 }
 

@@ -43,7 +43,7 @@ assets::assets(gui_core& gui, char* rel_path){
 		this->textures[texture_name] = texture;
 	};
 
-	//TODO: Load all asset files
+	//TODO: Load all asset files in rel_path
 	load_texture("option_border", "option_border.png");
 
 	std::filesystem::current_path(original_path);
@@ -217,7 +217,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 		debug("Option iteration: " << iteration << '\n');
 		if(column > 1){row += 1; column = 0;}
 		if(!option.reveal_conditions.empty()){
-			if(!compare_variables_against_player(story, option.reveal_conditions)){
+			if(!compare_sv(option.reveal_conditions, story->data_groups)){
 				iteration += 1;
 				continue;
 			}

@@ -57,7 +57,6 @@ struct string {
 	char* text;
 	size_t len;
 	size_t cap;
-	uint8_t ec;
 };
 //THIS IS PLACEHOLDER UNTIL FULL C UMAP IMPLEMENTATION
 struct string_hash {
