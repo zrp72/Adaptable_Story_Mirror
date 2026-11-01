@@ -515,7 +515,7 @@ parse_sv_changes(FILE* f, sv_changes* svc){
 	while( ')' != (c = fmove_pw(f)) ){
 
 		if(c == '<'){
-			clear_string(cdg);
+			clear_string(&cdg);
 			if(')' == (gfss_tsc(f, &cdg, ")>"))){
 				fprintf(stderr, "sv changes closed while changing data group: \"%s\"\n", cdg.text);
 				exit(1)
