@@ -567,13 +567,19 @@ parse_option(
 	}
 }
 
+struct paragraph*
+get_prg(){
+	struct paragraph* p = new paragraph();
+	p->t = PRG;
+}
+
 void
 parse_paragraph(
 	FILE* f, struct story* s,
 	struct styling* style
 ){
-	struct paragraph p;
-	p.txtr_data = style.paragraph;
+	struct paragraph p = get_prg();
+	p->txtr_data = style.paragraph;
 
 	struct string name = get_string(8);
 	gfss_tsc(f, &name, ":");
@@ -581,13 +587,13 @@ parse_paragraph(
 
 	if( '(' == fmove_pw(f) ){
 		fseek(f, 1, SEEK_CUR);
-		parse_sv_changes(f, &p.changes);
+		parse_sv_changes(f, &p->changes);
 		fmove_pw(f);
 	}
 
-	fread_glyphtext(f, &p.text, style, "\n\n");
+	fread_glyphtext(f, &p->text, style, "\n\n");
 	s->used_glyphs.insert(s->used_glyphs.end(),
-		p.text.begin(), p.text.end()
+		p->text.begin(), p->text.end()
 	);
 
 	if(s->tag_map.contains(name)){
@@ -596,6 +602,11 @@ parse_paragraph(
 	}
 
 	s->tag_map[name] = p;
+}
+
+void
+free_prg(struct paragraph* p){
+	delete p;
 }
 
 struct story*
@@ -667,9 +678,6 @@ free_story(struct story* s){
 		if(value->t == NXS){
 			free_nxs(&value);
 		} else if(value->t == PRG) {
-			for(auto& o : value.options){
-				free_option(o);
-			}
 			free_prg(value);
 		}	
 	}
