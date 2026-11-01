@@ -448,7 +448,7 @@ fread_glyphtext(
 ){
 	bool dnt = false; 
 	if( 0 == strncmp(ends, "\n\n", 2) ){
-		dn = true;
+		dnt = true;
 		ends += 2;
 	}
 	int c;
