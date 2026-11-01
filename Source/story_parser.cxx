@@ -267,7 +267,7 @@ edit_local_sv(FILE* f, story_vars* sv, char* ends){
 	if(sv->empty()){
 		printf("No story variables found to parse.");
 	}
-	free_string(cdg);
+	free_string(&cdg);
 	return rv;
 }
 
