@@ -523,7 +523,7 @@ parse_sv_changes(FILE* f, sv_changes* svc){
 		} else if(cdg.len == 0) {
 			printf("Active data group not declared during sv parse.");
 			exit(1);
-		} else if(rv == ','){
+		} else if(c == ','){
 			fseek(f, 1, SEEK_CUR);
 		} else {
 			struct data_change dc;
