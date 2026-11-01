@@ -318,7 +318,7 @@ parse_ext_grp(FILE* f, struct exit_group* eg){
 
 void
 parse_nexus(FILE* f, story* s){
-	struct string tag = gfss_tsc(f, ':');
+	struct string tag = gfss_tsc(f, ":");
 	if(s->tag_map.contains(tag)){
 		fprintf(stderr,
 			"Second declaration of nexus tag <%s>", 
