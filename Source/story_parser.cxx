@@ -467,7 +467,7 @@ fread_glyphtext(
 			int i = 0;
 			for( int rv = 0; -1 != (rv = match_key(
 					cache.text[cache.len - marker.len + i],
-					marker, i));
+					marker.text, i));
 					i += 1
 			){
 				if(rv == 1){
