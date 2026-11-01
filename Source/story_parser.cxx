@@ -29,6 +29,18 @@ fmove_pw(FILE* f){
 	return false;
 }
 
+int
+fmove_pw_sl(FILE* f){
+	int c;
+	while(EOF != (c = fgetc(f))){
+		if( !isspace(c) || c == '\n' ){
+			ungetc(c, f);
+			return c;
+		}
+	}
+	return false;
+}
+
 //Match key iteratively
 int
 match_key(
