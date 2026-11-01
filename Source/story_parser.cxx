@@ -413,7 +413,7 @@ parse_change_text(struct string* s){
 	}
 	//This is only until glyphtext gets updated to struct string
 	std::string cs(c.text);
-	free_string(c);
+	free_string(&c);
 	return cs;
 }
 
