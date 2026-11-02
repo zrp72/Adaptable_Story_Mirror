@@ -558,7 +558,7 @@ parse_paragraph(
 	FILE* f, struct story* s,
 	struct styling* style
 ){
-	struct paragraph p = get_prg();
+	struct paragraph* p = get_prg();
 	p->txtr_data = style.paragraph;
 
 	struct string name = get_string(8);
