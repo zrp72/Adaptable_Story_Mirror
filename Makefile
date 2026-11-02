@@ -23,7 +23,7 @@ obj_files = \
 	Source/gui.o \
 	Source/glyphtext.o \
 	Source/launch.o \
-	Source/progress.o \
+	Source/progress_story.o \
 	Source/utils.o
 
 %.o: %.cxx
