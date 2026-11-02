@@ -12,45 +12,54 @@
 
 //Returns true if sv1 has all the variables of sv2 at the same or higher values
 bool
-compare_sv(story_vars& sv1, story_vars& sv2){
-
-	bool viable = true;
-	for(const auto &[dgn, dg] : sv1){
-		if(sv2.contains(dgn){
-			for(const auto& [var, val] : dg){
-				if(sv2[dgn].contains(var)){
-					viable = val >= sv2[dgn][var];
-				}
-			}
-		}
-		if(!viable){break;}
+compare_sv(int val1, int op, int val2){
+	switch(op){
+	case '>':
+		return val1 > val2;
+	case '<':
+		return val1 < val2;
+	case '=':
+		return val1 = val2;
 	}
-	return viable;
+	fprintf(stderr, "Invalid comparison operator \"%c\"\n", op);
+	exit(1)
 }
 
 struct string
 get_destination(story &story, nexus &nexus){
+
+	auto& data = story.data_groups;
 
 	nexus.visits += 1;
 
 	std::vector<std::pair<char, int>> destination;
 	int highest_exit_group = -1;
 
+	int current_exit_group = -1;
 	for(auto& eg : nexus.exits){
+		current_exit_group += 1;
 
 		bool viable = true;
-		if(eg.conds.contains(reserved)){
-			if(eg.conds[reserved].contains(visits)){
-				viable = eg.conds[reserved][visits] > nexus.visits;
+		for(auto& dc : eg.conds){
+			if( 0 == strncmp(dc.dg.text, "reserved", 8) ){
+				if( 0 == strncmp(dc.var.text, "visit", 5) ){
+					viable = compare_sv(dc.val, dc.op, nexus.visits);
+				} else {
+					if(!data.contains(dc.dg)){
+						fprintf(stderr, "Attempted to compare against nonexistant data group \"\s\"\n", dc.dg.text);
+					} else if( !data[dc.dg].contains(var) ){
+						continue;
+					}
+					viable = compare_sv(dc.val, dc.op, data[dc.dg][dc.var]);
+				}
+			}
+			if(!viable){
+				break;
 			}
 		}
 		if(!viable){continue;}
 
-		if(!compare_sv(eg.conds, story.data_groups)){
-			continue;
-		}
-
-		highest_exit_group += 1;
+		highest_exit_group = current_exit_group;
 	}
 	if(highest_exit_group == -1){
 		debug("No exit found for nexus.\n");
@@ -84,6 +93,9 @@ apply_changes(struct story &story, sv_changes& changes){
 		case '-':
 			story.data_groups[c.dg][c.var] - c.val;
 			continue;
+		default:
+			fprintf(stderr, "Invalid change operator on change \"<%s>%s%c%d\"\n", c.dg.text, c.var.text, c.op, c.val);
+			exit(1)
 		}
 	}
 }

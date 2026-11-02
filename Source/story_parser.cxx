@@ -203,30 +203,6 @@ add_dg_alias(FILE* f, struct story* s){
 	s->dg_aliases[alias] = dg;
 }
 
-int
-add_dg_var(FILE* f, data_group* dg, const char* ends){
-	//TODO: This is gonna run a lot of times,
-	//figure out a way to only call mappend once
-	struct string dne = get_string(8);
-	//TODO: Figure out a way to chain mappend
-	dynamic_mappend(&dne, "+-=");
-	dynamic_mappend(&dne, ends);
-
-	struct string name = get_string(8);
-	int rv = gfss_tsc(f, &name, dne.text);
-	trim_tw(&name);
-	free_string(&dne);
-
-	if(!dg->contains(name)){
-		dg->at(name) = 0;
-	}
-	if(list_contains_c(ends, rv)){
-		dg->at(name) += 1;
-		return rv;
-	}
-	return use_fint(f, &dg->at(name), rv);
-}
-
 void
 remove_marker(FILE* f, struct styling* s){
 	struct string marker = get_string(8);
@@ -251,36 +227,57 @@ define_marker(FILE* f, struct styling* db){
 	//		can apply multiple changes.
 }
 
-int
-edit_local_sv(FILE* f, story_vars* sv, const char* ends){
-	int rv;
-	struct string cdg = get_string(8);
-	
-	while(!list_contains_c(ends, rv = fmove_pw(f))){
+void
+parse_sv_change(FILE* f, struct string* dg, struct data_change* dc, struct string* ends){
 
-		if(rv == '<'){
-			gfss_tsc(f, &cdg, ">");
-			if(!sv->contains(cdg)){
-				struct string n = duplicate_string(&cdg);
-				data_group dg;
-				sv->insert({n, dg});
+	dc->dg = duplicate_string(dg);
+	dc->var = get_string(8);
+	int c = gfss_tsc(f, &dc->var, ends);
+	trim_tw(&dc->var);
+	
+	if( c != '\0' && NULL == strchr("><-=+", c) ){
+		fprintf(stderr, "No change operator found for change to variable \"%s\" in data group \"%s\"\n",
+			dc->var.text, dg->text
+		);
+	}
+	dc->op = c;
+	fscanf(f, "%8d", &dc->val);
+
+}
+
+void
+parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
+	int c;
+	struct string cdg = get_string(8);
+	struct string e = get_string(8);
+	dynamic_mappend(e, "><-=+");
+	dynamic_mappend(e, ends);
+	
+	while( EOF != (c = fmove_pw(f)) ){
+		if( list_contains_c(ends, c) ){
+			break;
+		}
+
+		if(c == '<'){
+			clear_string(&cdg);
+			if('>' != (gfss_tsc(f, &cdg, e)) ){
+				fprintf(stderr, "sv changes closed while changing data group: \"%s\"\n", cdg.text);
+				exit(1);
 			}
 		} else if(cdg.len == 0) {
 			printf("Active data group not declared during sv parse.");
-			return -1;
-		} else if(rv == ','){
+			exit(1);
+		} else if(c == ','){
 			fseek(f, 1, SEEK_CUR);
 		} else {
-			if(')' == add_dg_var(f, &sv->at(cdg), ",)")){
-				break;
-			}
+			struct data_change dc;
+			parse_sv_change(f, &cdg, &dc, &e);
 		}
 	}
-	if(sv->empty()){
+	if(svc->empty()){
 		printf("No story variables found to parse.");
 	}
 	free_string(&cdg);
-	return rv;
 }
 
 struct nexus*
@@ -332,9 +329,10 @@ parse_nexus(FILE* f, story* s){
 	struct nexus* nxs = get_nxs();
 	s->tag_map[tag] = nxs;
 
+	int c;
 	struct exit_group eg = get_ext_grp();
-	while(']' != fmove_pw(f) && 
-			']' != edit_local_sv(f, &eg.conds, ":]")
+	while(']' != (c != fmove_pw(f)) && c != '\0' &&  
+		']' != parse_sv_changes(f, &eg.conds, ":]");
 	){
 		fmove_pw(f);
 		parse_ext_grp(f, &eg);
@@ -489,58 +487,12 @@ fread_glyphtext(
 	return c;
 }
 
-void
-parse_sv_change(FILE* f, struct string* dg, struct data_change* dc){
-
-	dc->dg = duplicate_string(dg);
-	dc->var = get_string(8);
-	int c = gfss_tsc(f, &dc->var, "+-=,)");
-	trim_tw(&dc->var);
-	
-	if(c == ',' || c == ')'){
-		fprintf(stderr, "No change operator found for change to variable \"%s\" in data group \"%s\"\n",
-			dc->var.text, dg->text
-		);
-	}
-	dc->op = c;
-	fscanf(f, "%8d", &dc->val);
-
-}
-
-void
-parse_sv_changes(FILE* f, sv_changes* svc){
-	int c;
-	struct string cdg = get_string(8);
-	
-	while( ')' != (c = fmove_pw(f)) ){
-
-		if(c == '<'){
-			clear_string(&cdg);
-			if(')' == (gfss_tsc(f, &cdg, ")>"))){
-				fprintf(stderr, "sv changes closed while changing data group: \"%s\"\n", cdg.text);
-				exit(1);
-			}
-		} else if(cdg.len == 0) {
-			printf("Active data group not declared during sv parse.");
-			exit(1);
-		} else if(c == ','){
-			fseek(f, 1, SEEK_CUR);
-		} else {
-			struct data_change dc;
-			parse_sv_change(f, &cdg, &dc);
-		}
-	}
-	if(svc->empty()){
-		printf("No story variables found to parse.");
-	}
-	free_string(&cdg);
-}
-
 struct option*
 get_option(story_vars* rc, txtr_info* ti){
 	struct option* o = new option();
 	o->reveal_conds = *rc;
 	o->txtr_data = *ti;
+	return o;
 }
 
 void
@@ -566,7 +518,7 @@ parse_option(
 
 	if( '(' == fmove_pw(f) ){
 		fseek(f, 1, SEEK_CUR);
-		parse_sv_changes(f, &o.changes);
+		parse_sv_changes(f, &o.changes, ")");
 		fmove_pw(f);
 	}
 
@@ -608,7 +560,7 @@ parse_paragraph(
 
 	if( '(' == fmove_pw(f) ){
 		fseek(f, 1, SEEK_CUR);
-		parse_sv_changes(f, &p->changes);
+		parse_sv_changes(f, &p->changes, ')');
 		fmove_pw(f);
 	}
 
@@ -678,7 +630,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 			parse_nexus(f, story);
 			continue;
 		case '(':
-			edit_local_sv(f, &option_conds, ')');
+			parse_sv_changes(f, &option_conds, ')');
 			continue;
 		case '{':
 			parse_option(f, story);

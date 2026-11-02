@@ -42,7 +42,7 @@ struct styling {
 struct option {
 	vector<glyph> prompt;
 	struct string dst_label;
-	story_vars reveal_conds;
+	sv_changes reveal_conds;
 	sv_changes changes;
 	txtr_info txtr_data;
 };
@@ -57,7 +57,7 @@ struct paragraph {
 };
 
 struct exit_group {
-	story_vars conds;
+	sv_changes conds;
 	vector<struct string> exits;
 };
 	
