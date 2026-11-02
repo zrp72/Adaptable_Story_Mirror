@@ -60,7 +60,7 @@ struct exit_group {
 	sv_changes conds;
 	vector<struct string> exits;
 };
-	
+
 struct nexus {
 	LCTN_T t;
 
