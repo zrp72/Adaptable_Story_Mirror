@@ -601,7 +601,8 @@ parse_story_file(const char* filepath, char* start_chapter){
 	}
 
 	struct story* story = new struct story();
-	story->location = start_chapter;
+	story->location = get_string(4);
+	dynamic_mappend(&story->location, start_chapter);
 
 	struct styling style;
 	struct sv_changes option_conds;
