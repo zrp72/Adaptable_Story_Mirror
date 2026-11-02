@@ -507,7 +507,7 @@ parse_option(
 
 	struct string base = get_string(8);
 	fmove_pw(f);
-	if('}' == gfss_tsc(f, &base, ":}"){
+	if( '}' == gfss_tsc(f, &base, ":}") ){
 		fprintf(stderr, "No destination found for option on paragraph \"%s\".\n", base.text);
 		exit(1);
 	}
