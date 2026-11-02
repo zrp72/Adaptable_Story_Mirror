@@ -622,12 +622,13 @@ parse_story_file(const char* filepath, char* start_chapter){
 		case '#':
 			define_marker(f, &style);
 			continue;
-		case '|':
+		case '|': {
 			struct string alteration = get_string(8);
 			gfss_tsc(f, &alteration, "\n");
 			update_styling(&style, &alteration);
 			free_string(&alteration);
 			continue;
+		}
 		case '@':
 			create_data_group(f, story);
 			continue;
