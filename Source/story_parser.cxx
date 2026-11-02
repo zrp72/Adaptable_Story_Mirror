@@ -239,13 +239,14 @@ parse_sv_change(FILE* f, struct string* dg, struct data_change* dc, struct strin
 		fprintf(stderr, "No change operator found for change to variable \"%s\" in data group \"%s\"\n",
 			dc->var.text, dg->text
 		);
+		exit(1);
 	}
 	dc->op = c;
 	fscanf(f, "%8d", &dc->val);
 
 }
 
-void
+int
 parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 	int c;
 	struct string cdg = get_string(8);
@@ -278,6 +279,7 @@ parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 		printf("No story variables found to parse.");
 	}
 	free_string(&cdg);
+	return c;
 }
 
 struct nexus*
