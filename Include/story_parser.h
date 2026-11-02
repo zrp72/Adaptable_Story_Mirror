@@ -20,8 +20,8 @@ struct data_change {
 	int val;
 };
 using sv_changes = std::vector<data_change>;
-using data_group = std::unordered_map<struct zstring, int, string_hash, string_equal>;
-using story_vars = std::unordered_map<struct zstring, data_group, string_hash, string_equal>;
+using data_group = std::unordered_map<struct zstring, int, string_hash>;
+using story_vars = std::unordered_map<struct zstring, data_group, string_hash>;
 
 struct txtr_info {
 	//This will be changed to struct string once other files are updated

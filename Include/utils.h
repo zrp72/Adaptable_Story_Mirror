@@ -58,16 +58,19 @@ struct zstring {
 	char* text;
 	size_t len;
 	size_t cap;
+
+	bool operator<(const zstring& b) const {
+		return std::strcmp(this->text, b.text) < 0;
+	}
+
+	bool operator==(const zstring& b) const {
+		return std::strcmp(this->text, b.text) == 0;
+	}
 };
 //THIS IS PLACEHOLDER UNTIL FULL C UMAP IMPLEMENTATION
 struct string_hash {
 	size_t operator()(const struct zstring& s) const noexcept {
 		return std::hash<std::string_view>{}(s.text);
-	}
-};
-struct string_equal {
-	bool operator()(const struct zstring& a, const struct zstring& b) const noexcept {
-		return std::strcmp(a.text, b.text) == 0;
 	}
 };
 struct char_ptr_hash {
