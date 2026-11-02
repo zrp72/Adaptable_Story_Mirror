@@ -209,10 +209,8 @@ remove_marker(FILE* f, struct styling* s){
 	struct string marker = get_string(8);
 	gfss_tsc(f, &marker, "\n");
 	if(s->markers.contains(marker)){
-		auto i = s->markers.find(marker);
-		auto n = s->markers.extract(i);
-		free_string(&n.key());
-		free_string(&n.mapped());
+		// TODO: Fix memory leak
+		s->markers.erase(marker);
 	}
 	free_string(&marker);
 }
@@ -658,15 +656,20 @@ parse_story_file(const char* filepath, char* start_chapter){
 
 void
 free_story(struct story* s){
+	/* TODO: Fix memory leak
 	for(auto& [key, value] : s->tag_map){
-		struct nexus *v = value;
-		free_string(key);
-		if(v->t == NXS){
-			free_nxs(v);
-		} else if(value->t == PRG) {
-			struct paragraph *p = value;
-			free_prg(p);
+		auto i = s->tag_map.find(key);
+		auto node = s->tag_map.extract(i);
+		free_string(&node.key());
+
+		struct nexus* n = (struct nexus*)node.mapped();
+		LCTN_T t = n->t;
+		if(t == NXS){
+			free_nxs(n);
+		} else if(t == PRG) {
+			free_prg((struct paragraph*)n);
 		}
 	}
+	*/
 }
 
