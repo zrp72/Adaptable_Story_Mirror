@@ -1,8 +1,7 @@
 @stats
 &stats:st
 
-Start:
-Create your character.
+Start: Create your character.
 Main Stat:
 
 {Start : select_str} Strength
