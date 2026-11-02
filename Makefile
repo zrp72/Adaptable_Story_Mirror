@@ -36,4 +36,4 @@ clean:
 	rm -f *.o
 
 image:
-	docker build .
+	docker build -t adaptable-story-mirror .
