@@ -250,8 +250,8 @@ parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 	int c;
 	struct string cdg = get_string(8);
 	struct string e = get_string(8);
-	dynamic_mappend(e, "><-=+");
-	dynamic_mappend(e, ends);
+	dynamic_mappend(&e, "><-=+");
+	dynamic_mappend(&e, ends);
 	
 	while( EOF != (c = fmove_pw(f)) ){
 		if( list_contains_c(ends, c) ){
