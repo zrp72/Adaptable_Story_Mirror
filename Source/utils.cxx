@@ -100,7 +100,7 @@ duplicate_string(struct zstring* o){
 void
 trim_tw(struct zstring* s){
 	while( isspace(s->text[s->len-1]) ){
-		s->text[s->--len] = '\0';
+		s->text[--s->len] = '\0';
 	}
 }
 
