@@ -642,7 +642,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 			parse_sv_changes(f, &option_conds, ")");
 			continue;
 		case '{':
-			parse_option(f, story);
+			parse_option(f, story, &style, &option_conds);
 			continue;
 		default:
 			parse_paragraph(f, story);
