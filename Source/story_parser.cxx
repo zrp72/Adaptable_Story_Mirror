@@ -550,6 +550,7 @@ struct paragraph*
 get_prg(){
 	struct paragraph* p = new paragraph();
 	p->t = PRG;
+	return p;
 }
 
 void
