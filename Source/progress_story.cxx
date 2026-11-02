@@ -45,7 +45,7 @@ get_destination(story &story, nexus &nexus){
 				} else {
 					if(!data.contains(dc.dg)){
 						fprintf(stderr, "Attempted to compare against nonexistant data group \"%s\"\n", dc.dg.text);
-					} else if( !data[dc.dg].contains(var) ){
+					} else if( !data[dc.dg].contains(dc.var) ){
 						continue;
 					}
 					viable = compare_sv(dc.val, dc.op, data[dc.dg][dc.var]);
