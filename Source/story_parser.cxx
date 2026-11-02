@@ -559,7 +559,7 @@ parse_paragraph(
 	struct styling* style
 ){
 	struct paragraph* p = get_prg();
-	p->txtr_data = style.paragraph;
+	p->txtr_data = style->paragraph;
 
 	struct string name = get_string(8);
 	gfss_tsc(f, &name, ":");
