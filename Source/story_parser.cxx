@@ -177,6 +177,7 @@ use_fint(FILE* f, int* trg, int op){
 		return fgetc(f);
 	}
 	fprintf(stderr, "Invalid operation type: \"%c\"\n", op);
+	exit(1);
 }
 
 void
