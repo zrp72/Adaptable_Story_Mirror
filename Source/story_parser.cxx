@@ -334,7 +334,7 @@ parse_nexus(FILE* f, story* s){
 	int c;
 	struct exit_group eg = get_ext_grp();
 	while(']' != (c != fmove_pw(f)) && c != '\0' &&  
-		']' != parse_sv_changes(f, &eg.conds, ":]");
+		']' != parse_sv_changes(f, &eg.conds, ":]")
 	){
 		fmove_pw(f);
 		parse_ext_grp(f, &eg);
