@@ -229,7 +229,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 		bool viable = true;
 		for(auto& dc : rvl_cnds){
 			if(!data.contains(dc.dg)){
-				fprintf(stderr, "Attempted to compare against nonexistant data group \"\s\"\n", dc.dg.text);
+				fprintf(stderr, "Attempted to compare against nonexistant data group \"%s\"\n", dc.dg.text);
 			} else if( !data[dc.dg].contains(var) ){
 				continue;
 			}
