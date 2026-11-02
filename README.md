@@ -10,5 +10,7 @@ Planned changes to this project are:
 Full replacement of std::unordered_map and std::vector for custom implementations(ETA: ~December 1)
 
 Collaborators:
-Bugfixing: William Pursell\(wrp\)
-Demo Story: Quinn Pursell\(Rotary_Productions\)
+
+-Bugfixing: William Pursell\(wrp\)
+
+-Demo Story: Quinn Pursell\(Rotary_Productions\)
