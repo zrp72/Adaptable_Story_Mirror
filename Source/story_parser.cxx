@@ -656,9 +656,10 @@ free_story(struct story* s){
 		struct nexus *v = value;
 		free_string(key);
 		if(v->t == NXS){
-			free_nxs(&value);
+			free_nxs(&v);
 		} else if(value->t == PRG) {
-			free_prg(value);
+			struct paragraph *p = value;
+			free_prg(p);
 		}
 	}
 }
