@@ -609,7 +609,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 		}
 		switch(c){
 		case '/':
-			fmove_pc(f, '\n'))
+			fmove_pc(f, '\n');
 			continue;
 		case '\\':
 			remove_marker(f, &style.markers);
