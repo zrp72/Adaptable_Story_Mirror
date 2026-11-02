@@ -75,7 +75,7 @@ void
 init_string(struct zstring* string, size_t cap){
 	string->len = 0;
 	string->cap = cap;
-	string->text = xcalloc(cap, sizeof(char));
+	string->text = (char*)xcalloc(cap, sizeof(char));
 }
 
 struct zstring
