@@ -626,7 +626,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 			struct string alteration = get_string(8);
 			gfss_tsc(f, &alteration, "\n");
 			update_styling(&style, &alteration);
-			free_string(alteration);
+			free_string(&alteration);
 			continue;
 		case '@':
 			create_data_group(f, story);
