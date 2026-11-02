@@ -16,7 +16,7 @@ RUN mkdir -p ${dest}
 RUN mkdir -p ${dest}/Source
 RUN mkdir -p ${dest}/Include
 COPY * ${dest}
-COPY Source/* ${dest}/Source
+COPY Source/*.c Source/*.cxx ${dest}/Source
 COPY Include/* ${dest}/Include
 WORKDIR ${dest}
 
