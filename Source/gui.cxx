@@ -205,6 +205,8 @@ create_story_display(gui_core& gui, assets& assets, struct story& story){
 
 int
 create_option_display(gui_core& gui, assets& main_assets, struct story& story){
+	auto& data = story.data_groups;
+
 	UI_element element;
 
 	int column = 0;
@@ -222,10 +224,17 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 	for(auto& option : location->options){
 		debug("Option iteration: " << iteration << '\n');
 		if(column > 1){row += 1; column = 0;}
-		if(!option.reveal_conditions.empty()){
-			if(!compare_sv(option.reveal_conditions, story->data_groups)){
-				iteration += 1;
+
+		auto& rvl_cnds = option->reveal_conds;
+		bool viable = true;
+		for(auto& dc : rvl_cnds){
+			if(!data.contains(dc.dg)){
+				fprintf(stderr, "Attempted to compare against nonexistant data group \"\s\"\n", dc.dg.text);
+			} else if( !data[dc.dg].contains(var) ){
 				continue;
+			}
+			if( false == (viable = compare_sv(dc.val, dc.op, data[dc.dg][dc.var])) ){
+				goto end;
 			}
 		}
 
@@ -261,6 +270,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 		));
 
 		column += 1;
+end:
 		iteration += 1;
 	}
 
