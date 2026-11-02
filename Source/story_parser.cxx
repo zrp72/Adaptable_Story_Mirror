@@ -653,8 +653,9 @@ parse_story_file(const char* filepath, char* start_chapter){
 void
 free_story(struct story* s){
 	for(auto& [key, value] : s->tag_map){
+		struct nexus *v = value;
 		free_string(key);
-		if(value->t == NXS){
+		if(v->t == NXS){
 			free_nxs(&value);
 		} else if(value->t == PRG) {
 			free_prg(value);
