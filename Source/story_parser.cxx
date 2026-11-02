@@ -177,6 +177,7 @@ use_fint(FILE* f, int* trg, int op){
 		return fgetc(f);
 	}
 	fprintf(stderr, "Invalid operation type: \"%c\"\n", op);
+	exit(1);
 }
 
 void
@@ -608,7 +609,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 		}
 		switch(c){
 		case '/':
-			fmove_pc(f, '\n'))
+			fmove_pc(f, '\n');
 			continue;
 		case '\\':
 			remove_marker(f, &style.markers);
@@ -651,7 +652,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 
 void
 free_story(struct story* s){
-	for(auto& [key, value] : s.tag_map){
+	for(auto& [key, value] : s->tag_map){
 		free_string(key);
 		if(value->t == NXS){
 			free_nxs(&value);

@@ -7,7 +7,7 @@ else
     HOME_DIR ?= $(HOME)
 endif
 
-CXXFLAGS = -std=c++20 
+CXXFLAGS = -std=c++20
 CPPFLAGS = \
 	-IInclude \
 	-I$(HOME_DIR)\Documents\SDKs\SDL\x86_64-w64-mingw32\include \
@@ -34,3 +34,6 @@ ASM: $(obj_files)
 
 clean:
 	rm -f *.o
+
+image:
+	docker build .
