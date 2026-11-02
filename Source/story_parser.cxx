@@ -537,10 +537,10 @@ parse_sv_changes(FILE* f, sv_changes* svc){
 }
 
 struct option*
-get_option(story_vars* rc, txtr_data* td){
+get_option(story_vars* rc, txtr_info* ti){
 	struct option* o = new option();
 	o->reveal_conds = *rc;
-	o->txtr_data = *td;
+	o->txtr_data = *ti;
 }
 
 void
