@@ -232,7 +232,7 @@ parse_sv_change(FILE* f, struct string* dg, struct data_change* dc, struct strin
 
 	dc->dg = duplicate_string(dg);
 	dc->var = get_string(8);
-	int c = gfss_tsc(f, &dc->var, ends);
+	int c = gfss_tsc(f, &dc->var, ends->text);
 	trim_tw(&dc->var);
 	
 	if( c != '\0' && NULL == strchr("><-=+", c) ){
