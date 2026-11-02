@@ -445,7 +445,7 @@ int
 fread_glyphtext(
 	FILE* f,
 	vector<glyph>* cntr, struct styling* s,
-	char* ends
+	const char* ends
 ){
 	bool dnt = false; 
 	if( 0 == strncmp(ends, "\n\n", 2) ){
