@@ -210,10 +210,10 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 	float column_w = .3;
 	float column_h = .05;
 
-	void* location = story.tag_map[story.location];
+	struct paragraph* location = (struct paragraph*)story.tag_map[story.location];
 	if(location->t == NXS){
-		debug("Story location set to nexus? " << story.story_location << '\n');
-		return 1;
+		fprintf("Story location set to nexus \"%s\"\n", story.location.text);
+		exit(1);
 	}
 
 	int iteration = 1;
