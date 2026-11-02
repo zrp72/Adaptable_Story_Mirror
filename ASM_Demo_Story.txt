@@ -1,0 +1,134 @@
+@stats
+&stats:st
+
+Start:
+Create your character.
+Main Stat:
+
+{Start : select_str} Strength
+{Start : select_dex} Dexterity
+{Start : select_int} Intelligence
+
+[select_str:
+	<st> all = 2:
+	roll_home
+
+	Default:
+	Strength
+]
+[select_dex:
+	<st> all = 2:
+	roll_home
+
+	Default:
+	Dexterity
+]
+[select_int:
+	<st> all = 2:
+	roll_home
+
+	Default:
+	Intelligence
+]
+
+Strength: (<st> str + 1, all + 1)
+You feel slightly stronger.
+
+Dexterity: (<st> dex + 1, all + 1)
+You feel slightly stronger.
+
+Intelligence: (<st> int + 1, all + 1)
+You feel slightly stronger.
+
+{Strength : Start} Secondary:
+{Dexterity : Start} Secondary:
+{Intelligence : Start} Secondary:
+
+
+[roll_home:
+	<st> str = 2:
+	Village
+	City
+	Warriors_house
+	Farmers_house
+
+	<st> str = 1:
+	Village
+	City
+	Farmers_house
+
+	<st> dex = 2:
+	Village
+	City
+	Bandit_camp
+	Rouges_guild
+
+	<st> dex = 1:
+	Village
+	City
+	Bandit_camp
+
+	<st> int = 2:
+	Village
+	City
+	Wizards_tower
+	Noble
+	
+<st> int = 1:
+	Village
+	City
+	Wizards_tower
+]
+
+Village:
+You awake in a rural village, the sound of footsteps comes from outside.
+
+City:
+You awake surrounded by stone.
+Overlapping voices from the city outdoors can be heard.
+Warriors_house:
+You awake in a room adorned with swords hanging from the walls.
+A man stands in the corner, gray hair covering his face.
+
+Farmers_house:
+You awake in a rural village, the sound of footsteps comes from outside.
+Your father steps into the room, a bundle of hay in his arms.
+
+Bandit_camp:
+You awake staring up at the stars surrounded by men bustling around the room, hoods covering their faces.
+
+Rouges_guild:
+You awake staring up at a shadowed face. Stepping away you see a room full of men, all equipped with weapons.
+
+Wizards_tower:
+You awake with the smell of old paper filling your nose.
+
+Noble:
+You awake with the warmth of a fire warm on your skin. Silk sheets cover your body in a soft bed.
+
+{Village : Work} Get up and look for work.
+{Village : Study} Get up and begin studying.
+{Farmers_house : Work} Get up and look for work.
+{Farmers_house : Study} Get up and begin studying.
+{Warriors_house : Work} Get up and look for work.
+{Warriors_house : Study} Get up and begin studying.
+
+[Work:
+	<st> str = 1:
+	Courier
+	
+<st> dex = 1:
+Messenger
+
+<st> int = 1:
+Scribe
+]
+
+Courier: (<st> gold + 3)
+You help an old man move his furniture and he pays you three gold.
+
+Messenger: (<st> gold + 3)
+You bring a message from the guards post to the mayor for three gold.
+
+Scribe: (<st> gold + 3)
+You help copy the town's old manuscripts for three gold.
