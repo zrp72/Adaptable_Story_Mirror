@@ -10,6 +10,7 @@ extern "C" {
 #include "gui.h"
 #include "glyphtext.h"
 #include "launch.h"
+#include "progress_story.h"
 
 int main(int argc, char** argv) {
 	try {
