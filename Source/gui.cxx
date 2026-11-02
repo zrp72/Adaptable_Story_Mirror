@@ -245,7 +245,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 			exit(1);
 		}
 
-		for(auto& t : option.prompt){
+		for(auto& t : option->prompt){
 			debug(char(t.unicode));
 		}
 		debug('\n');
@@ -254,7 +254,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 		float y_pos = .7 + .1 * row;
 		relative_rect mask(x_pos, y_pos, column_w, column_h);
 
-		auto& prompt = option.prompt;
+		auto& prompt = option->prompt;
 		element.text.push_back(relative_text(
 			prompt,
 			mask,
