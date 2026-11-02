@@ -223,6 +223,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 
 	int iteration = 1;
 	for(auto& option : location->options){
+		{
 		debug("Option iteration: " << iteration << '\n');
 		if(column > 1){row += 1; column = 0;}
 
@@ -271,6 +272,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 		));
 
 		column += 1;
+	}
 end:
 		iteration += 1;
 	}
