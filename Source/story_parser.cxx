@@ -579,6 +579,7 @@ parse_paragraph(
 		exit(1);
 	}
 
+	printf("Defined paragraph \"%s\"\n", name.text);
 	s->tag_map[name] = p;
 }
 
