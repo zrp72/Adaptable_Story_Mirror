@@ -74,9 +74,10 @@ get_destination(story &story, nexus &nexus){
 
 void
 apply_changes(struct story &story, sv_changes& changes){
+	auto& data = story.data_groups;
 	for(const auto& c : changes){
-		if(!story.data_groups.contains(c.dg)){
-			fprintf(stderr, "Attempted to alter nonexistent data group: %s", dgn.text);
+		if(!data.contains(c.dg)){
+			fprintf(stderr, "Attempted to alter nonexistent data group: %s", c.dg.text);
 			exit(1);
 		}
 		if(!story.data_groups[c.dg].contains(c.var)){
@@ -94,7 +95,7 @@ apply_changes(struct story &story, sv_changes& changes){
 			continue;
 		default:
 			fprintf(stderr, "Invalid change operator on change \"<%s>%s%c%d\"\n", c.dg.text, c.var.text, c.op, c.val);
-			exit(1)
+			exit(1);
 		}
 	}
 }
