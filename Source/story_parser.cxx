@@ -530,12 +530,15 @@ parse_option(
 		o->prompt.begin(), o->prompt.end()
 	);
 
-	if(s->tag_map.contains(base) && s->tag_map[base]->t == PRG){
-		s->tag_map[base]->options.push_back(o);
-	} else {
-		fprintf(stderr, "Attempted to attach option to undeclared paragraph: \"%s\"\n", base.text);
-		exit(1);
+	if( s->tag_map.contains(base) ){
+		struct paragraph* p = (struct paragraph*)s->tag_map[base];
+		if(p->t == PRG){
+			p->options.push_back(o);
+			return;
+		}
 	}
+	fprintf(stderr, "Attempted to attach option to undeclared paragraph: \"%s\"\n", base.text);
+	exit(1);
 }
 
 void
