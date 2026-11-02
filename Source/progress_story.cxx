@@ -25,7 +25,7 @@ compare_sv(int val1, int op, int val2){
 	exit(1)
 }
 
-struct string
+struct zstring
 get_destination(story &story, nexus &nexus){
 
 	auto& data = story.data_groups;
@@ -134,7 +134,7 @@ progress_story(struct story &data, assets& main_assets, gui_core& gui, int choic
 
 		debug("Dest label: " << c.dst_label.text << '\n');
 		void* dst = tag_map[c.dst_label];
-		struct string* dst = &c.dst_label;
+		struct zstring* dst = &c.dst_label;
 
 		while(tag_map[*dst]->t == NXS){
 			*dst = get_destination(story, *tag_map[*dst]);

@@ -71,46 +71,46 @@ xrealloc(void* p, size_t new_size){
 ////////////////////////////////////////////
 
 void
-init_string(struct string* string, size_t cap){
+init_string(struct zstring* string, size_t cap){
 	string->len = 0;
 	string->cap = cap;
 	string->text = xcalloc(cap, sizeof(char));
 }
 
-struct string
+struct zstring
 get_string(size_t cap){
-	struct string s;
+	struct zstring s;
 	init_string(&s, cap);
-	return string;
+	return s;
 }
 
 void
-free_string(struct string* s){
+free_string(struct zstring* s){
 	free(s->text);
 }
 
-struct string
-duplicate_string(struct string* o){
-	struct string n = *o;
+struct zstring
+duplicate_string(struct zstring* o){
+	struct zstring n = *o;
 	n.text = strdup(o->text);
 	return n;
 }
 
 void
-trim_tw(struct string* s){
+trim_tw(struct zstring* s){
 	while( isspace(s->text[s->len-1]) ){
 		s->text[s->--len] = '\0';
 	}
 }
 
 void
-clear_string(struct string* s){
+clear_string(struct zstring* s){
 	s->text[0] = '\0';
 	s->len = 0;
 }
 
 void
-dynamic_append(struct string* string, char c){
+dynamic_append(struct zstring* string, char c){
 	if((string->cap - string->len) <= 1){
 		string->text = xrealloc(string->text, string->cap *= 2);
 	}
@@ -119,14 +119,14 @@ dynamic_append(struct string* string, char c){
 }
 
 void
-dynamic_mappend(struct string* s, char* mc){
+dynamic_mappend(struct zstring* s, char* mc){
 	for(int i = 0; mc[i] != '\0'; i++){
 		dynamic_append(s, mc[i]);
 	}
 }
 
 void
-dynamic_sappend(struct string* s, const char* src, int i, int l){
+dynamic_sappend(struct zstring* s, const char* src, int i, int l){
 	while(i < (i + l)){
 		dynamic_append(s, src[i]);
 		i += 1;

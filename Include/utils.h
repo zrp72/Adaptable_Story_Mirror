@@ -54,19 +54,19 @@ size_t int_hash(void*);
 size_t bool_hash(void*);
 */
 
-struct string {
+struct zstring {
 	char* text;
 	size_t len;
 	size_t cap;
 };
 //THIS IS PLACEHOLDER UNTIL FULL C UMAP IMPLEMENTATION
 struct string_hash {
-	size_t operator()(const struct string& s) const noexcept {
+	size_t operator()(const struct zstring& s) const noexcept {
 		return std::hash<std::string_view>{}(s.text);
 	}
 };
 struct string_equal {
-	bool operator()(const struct string& a, const struct string& b) const noexcept {
+	bool operator()(const struct zstring& a, const struct zstring& b) const noexcept {
 		return std::strcmp(a.text, b.text) == 0;
 	}
 };
@@ -82,15 +82,15 @@ struct char_ptr_equal {
 };
 ///////////////////////////////////////////////////////
 #define FULL_WS 1<<0
-void init_string(struct string*, size_t cap);
-struct string get_string(size_t cap);
-void free_string(struct string*);
-struct string duplicate_string(struct string*);
-void trim_tw(struct string*);
-void clear_string(struct string*);
-void dynamic_append(struct string*, char);
-void dynamic_mappend(struct string*, const char*);
-void dynamic_sappend(struct string*, const char*, int, int);
+void init_string(struct zstring*, size_t cap);
+struct zstring get_string(size_t cap);
+void free_string(struct zstring*);
+struct zstring duplicate_string(struct zstring*);
+void trim_tw(struct zstring*);
+void clear_string(struct zstring*);
+void dynamic_append(struct zstring*, char);
+void dynamic_mappend(struct zstring*, const char*);
+void dynamic_sappend(struct zstring*, const char*, int, int);
 
 std::string lowercase_string(std::string);
 std::string trim_string(std::string);

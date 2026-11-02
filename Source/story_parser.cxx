@@ -75,7 +75,7 @@ list_contains_c(const char* list, char c){
 }
 
 int
-gss_tsc(const char* start, struct string* s, const char* ends){
+gss_tsc(const char* start, struct zstring* s, const char* ends){
 	int c;
 	while('\0' != (c = *start++)){
 		if(list_contains_c(ends, c)){
@@ -103,7 +103,7 @@ gss_tsc(const char* start, struct string* s, const char* ends){
 //|Trims whitespace if string is
 //	terminated on \n
 int
-gfss_tsc(FILE* f, struct string* string, const char* end){
+gfss_tsc(FILE* f, struct zstring* string, const char* end){
 	int c;
 	while(EOF != (c = fgetc(f))){
 		if(list_contains_c(end, c)){
@@ -130,7 +130,7 @@ gfss_tsc(FILE* f, struct string* string, const char* end){
 //	if string is the last
 //	char read is \n
 int
-gfss_tmc(FILE* f, struct string* string, char* end){
+gfss_tmc(FILE* f, struct zstring* string, char* end){
 
 	int ki = 0;
 	int c;
@@ -182,7 +182,7 @@ use_fint(FILE* f, int* trg, int op){
 
 void
 create_data_group(FILE* f, struct story* s){
-	struct string name = get_string(8);
+	struct zstring name = get_string(8);
 	gfss_tsc(f, &name, "\n");
 	data_group dg;
 	s->data_groups[name] = dg;
@@ -190,12 +190,12 @@ create_data_group(FILE* f, struct story* s){
 
 void
 add_dg_alias(FILE* f, struct story* s){
-	struct string dg = get_string(8);
+	struct zstring dg = get_string(8);
 	if('\n' == gfss_tsc(f, &dg, ":\n")){
 		printf("dg alias ended at \\n before finding the alias: %s", dg.text);
 		return;
 	}
-	struct string alias = get_string(8);
+	struct zstring alias = get_string(8);
 	gfss_tsc(f, &alias, "\n");
 	if( s->dg_aliases.contains(alias) ){
 		fprintf(stderr, "Attempted to redefine dg alias \"%s\"\n", alias.text);
@@ -206,7 +206,7 @@ add_dg_alias(FILE* f, struct story* s){
 
 void
 remove_marker(FILE* f, struct styling* s){
-	struct string marker = get_string(8);
+	struct zstring marker = get_string(8);
 	gfss_tsc(f, &marker, "\n");
 	if(s->markers.contains(marker)){
 		// TODO: Fix memory leak
@@ -217,9 +217,9 @@ remove_marker(FILE* f, struct styling* s){
 
 void
 define_marker(FILE* f, struct styling* db){
-	struct string change = get_string(8);
+	struct zstring change = get_string(8);
 	gfss_tsc(f, &change, ":");
-	struct string marker = get_string(8);
+	struct zstring marker = get_string(8);
 	gfss_tsc(f, &marker, "\n");
 	db->markers[marker] = change;
 	//TODO: Update how markers are stored so one marker
@@ -227,7 +227,7 @@ define_marker(FILE* f, struct styling* db){
 }
 
 void
-parse_sv_change(FILE* f, struct string* dg, struct data_change* dc, struct string* ends){
+parse_sv_change(FILE* f, struct zstring* dg, struct data_change* dc, struct zstring* ends){
 
 	dc->dg = duplicate_string(dg);
 	dc->var = get_string(8);
@@ -248,8 +248,8 @@ parse_sv_change(FILE* f, struct string* dg, struct data_change* dc, struct strin
 int
 parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 	int c;
-	struct string cdg = get_string(8);
-	struct string e = get_string(8);
+	struct zstring cdg = get_string(8);
+	struct zstring e = get_string(8);
 	dynamic_mappend(&e, "><-=+");
 	dynamic_mappend(&e, ends);
 
@@ -299,7 +299,7 @@ get_ext_grp(){
 void
 parse_ext_grp(FILE* f, struct exit_group* eg){
 
-	struct string e = get_string(8);
+	struct zstring e = get_string(8);
 	while('\n' != fmove_pw_sl(f)){
 		int c = gfss_tsc(f, &e, "\n]");
 		if(e.len > 0){
@@ -316,7 +316,7 @@ parse_ext_grp(FILE* f, struct exit_group* eg){
 
 void
 parse_nexus(FILE* f, story* s){
-	struct string tag = get_string(8);
+	struct zstring tag = get_string(8);
 	gfss_tsc(f, &tag, ":");
 	trim_tw(&tag);
 	if(s->tag_map.contains(tag)){
@@ -363,7 +363,7 @@ free_nxs(struct nexus* nxs){
 */
 
 long
-parse_change_number(struct string* s){
+parse_change_number(struct zstring* s){
 	char* t = s->text;
 	if(t[TOKEN_LENGTH] != '('){
 		fprintf(stderr, "Invalid change: %s\n", t);
@@ -379,7 +379,7 @@ parse_change_number(struct string* s){
 }
 
 SDL_Color
-parse_rgba_change(struct string* s){
+parse_rgba_change(struct zstring* s){
 	char* t = s->text;
 	if(t[TOKEN_LENGTH] != '('){
 		fprintf(stderr, "Invalid change: %s\n", t);
@@ -400,24 +400,24 @@ parse_rgba_change(struct string* s){
 }
 
 std::string
-parse_change_text(struct string* s){
+parse_change_text(struct zstring* s){
 	char* t = s->text;
 	if(t[TOKEN_LENGTH] != '('){
 		fprintf(stderr, "Invalid change: %s\n", t);
 		exit(1);
 	}
-	struct string c = get_string(8);
+	struct zstring c = get_string(8);
 	if('\n' == gss_tsc(t+TOKEN_LENGTH+1, &c, ")\n")){
 		fprintf(stderr, "Invalid change; missing close parenthesis: %s\n", t);
 	}
-	//This is only until glyphtext gets updated to struct string
+	//This is only until glyphtext gets updated to struct zstring
 	std::string cs(c.text);
 	free_string(&c);
 	return cs;
 }
 
 void
-update_styling(struct styling* s, struct string* change){
+update_styling(struct styling* s, struct zstring* change){
 	char* t = change->text;
 	if(0 == strncmp(t, "bold", TOKEN_LENGTH)){
 		s->glyph.bold = !!parse_change_number(change);
@@ -451,7 +451,7 @@ fread_glyphtext(
 		ends += 2;
 	}
 	int c;
-	struct string cache = get_string(8);
+	struct zstring cache = get_string(8);
 	while( EOF != (c = fgetc(f))){
 		if(dnt){
 			if(c == '\n' && '\n' == fmove_pw_sl(f) ){
@@ -503,7 +503,7 @@ parse_option(
 ){
 	struct option* o = get_option(conds, &style->option);
 
-	struct string base = get_string(8);
+	struct zstring base = get_string(8);
 	fmove_pw(f);
 	if( '}' == gfss_tsc(f, &base, ":}") ){
 		fprintf(stderr, "No destination found for option on paragraph \"%s\".\n", base.text);
@@ -511,7 +511,7 @@ parse_option(
 	}
 
 	fmove_pw(f);
-	struct string dst = get_string(8);
+	struct zstring dst = get_string(8);
 	gfss_tsc(f, &dst, "}");
 
 	trim_tw(&base);
@@ -559,7 +559,7 @@ parse_paragraph(
 	struct paragraph* p = get_prg();
 	p->txtr_data = style->paragraph;
 
-	struct string name = get_string(8);
+	struct zstring name = get_string(8);
 	gfss_tsc(f, &name, ":");
 	trim_tw(&name);
 
@@ -621,7 +621,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 			define_marker(f, &style);
 			continue;
 		case '|': {
-			struct string alteration = get_string(8);
+			struct zstring alteration = get_string(8);
 			gfss_tsc(f, &alteration, "\n");
 			update_styling(&style, &alteration);
 			free_string(&alteration);
