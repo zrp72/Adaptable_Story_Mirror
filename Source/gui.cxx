@@ -173,7 +173,7 @@ create_story_display(gui_core& gui, assets& assets, struct story& story){
 	}
 	auto& story_text = location->text;
 	auto& border = location->txtr_data.border;
-	if(main_assets.textures.contains(border)){
+	if(assets.textures.contains(border)){
 		fprintf(stderr, "Attempted to use unloaded texture: %s\n", border.c_str());
 		exit(1);
 	}
@@ -186,7 +186,7 @@ create_story_display(gui_core& gui, assets& assets, struct story& story){
 
 	element.texture.push_back(relative_texture(
 		border,
-		main_assets.get_texture_srcrect(border),
+		assets.get_texture_srcrect(border),
 		relative_rect(x_pos -.05, y_pos, .4, .05),
 		[=](struct story& data, assets& assets, gui_core& gui){}
 	));
