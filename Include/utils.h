@@ -9,6 +9,7 @@
 #include <sstream>
 #include <cstring>
 #include <cinttypes>
+#include <unordered_map>
 
 #define debug(x) std::cout<<x
 
