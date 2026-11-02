@@ -113,7 +113,7 @@ clear_string(struct zstring* s){
 void
 dynamic_append(struct zstring* string, char c){
 	if((string->cap - string->len) <= 1){
-		string->text = xrealloc(string->text, string->cap *= 2);
+		string->text = (char*)xrealloc(string->text, string->cap *= 2);
 	}
 	string->text[string->len++] = c;
 	string->text[string->len] = '\0';
