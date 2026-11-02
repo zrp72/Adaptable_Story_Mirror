@@ -168,7 +168,7 @@ create_story_display(gui_core& gui, assets& assets, struct story& story){
 	UI_element element;
 	struct paragraph* location = (struct paragraph*)story.tag_map[story.location];
 	if(location->t != PRG){
-		fprintf(stderr, "Location set to nexus \"%s\"\n", story.location);
+		fprintf(stderr, "Location set to nexus \"%s\"\n", story.location.text);
 		exit(1);
 	}
 	auto& story_text = location->text;
@@ -184,12 +184,14 @@ create_story_display(gui_core& gui, assets& assets, struct story& story){
 		relative_rect(.15, .1, .7)
 	));
 
+	/* TODO: Implement paragraph borders
 	element.texture.push_back(relative_texture(
 		border,
 		assets.get_texture_srcrect(border),
 		relative_rect(x_pos -.05, y_pos, .4, .05),
 		[=](struct story& data, assets& assets, gui_core& gui){}
 	));
+	*/
 
 	for(auto& g : element.text[0].text.glyphs){
 		debug(char(g.unicode));
