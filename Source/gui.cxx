@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "gui.h"
+#include "progress_story.h"
 
 
 void
