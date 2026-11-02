@@ -605,7 +605,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 	dynamic_mappend(&story->location, start_chapter);
 
 	struct styling style;
-	struct sv_changes option_conds;
+	sv_changes option_conds;
 
 	int c;
 	while(EOF != (c = fgetc(f)){
