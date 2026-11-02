@@ -617,10 +617,10 @@ parse_story_file(const char* filepath, char* start_chapter){
 			fmove_pc(f, '\n');
 			continue;
 		case '\\':
-			remove_marker(f, &style.markers);
+			remove_marker(f, &style);
 			continue;
 		case '#':
-			define_marker(f, &style.markers);
+			define_marker(f, &style);
 			continue;
 		case '|':
 			struct string alteration = get_string(8);
