@@ -5,10 +5,8 @@
 #include <stdexcept> //may not be needed
 #include <cerrno>
 
-#include "functions.h"
-#include "basic_functions.h"
-
-#define debug(x)  std::cout << x
+#include "story_parser.h"
+#include "utils.h"
 
 //Returns true if sv1 has all the variables of sv2 at the same or higher values
 bool
@@ -22,7 +20,7 @@ compare_sv(int val1, int op, int val2){
 		return val1 = val2;
 	}
 	fprintf(stderr, "Invalid comparison operator \"%c\"\n", op);
-	exit(1)
+	exit(1);
 }
 
 struct zstring
