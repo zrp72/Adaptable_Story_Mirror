@@ -260,7 +260,7 @@ parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 
 		if(c == '<'){
 			clear_string(&cdg);
-			if('>' != (gfss_tsc(f, &cdg, e)) ){
+			if('>' != (gfss_tsc(f, &cdg, e.text)) ){
 				fprintf(stderr, "sv changes closed while changing data group: \"%s\"\n", cdg.text);
 				exit(1);
 			}
