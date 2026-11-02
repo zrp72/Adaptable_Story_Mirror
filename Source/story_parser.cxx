@@ -639,7 +639,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 			parse_nexus(f, story);
 			continue;
 		case '(':
-			parse_sv_changes(f, &option_conds, ')');
+			parse_sv_changes(f, &option_conds, ")");
 			continue;
 		case '{':
 			parse_option(f, story);
