@@ -30,7 +30,7 @@ xrealloc(void* p, size_t new_size){
 	return n;
 }
 
-////////////////////////////////////////////
+/*
 //The following functions are placeholder
 //for future custom umap implementation
 
@@ -69,6 +69,7 @@ xrealloc(void* p, size_t new_size){
 	size_t bool_hash(void*){}//Just in case
 ////////////////////////////////////////////
 ////////////////////////////////////////////
+*/
 
 void
 init_string(struct zstring* string, size_t cap){
