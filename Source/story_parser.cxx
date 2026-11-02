@@ -490,7 +490,7 @@ fread_glyphtext(
 }
 
 struct option*
-get_option(story_vars* rc, txtr_info* ti){
+get_option(sv_changes* rc, txtr_info* ti){
 	struct option* o = new option();
 	o->reveal_conds = *rc;
 	o->txtr_data = *ti;
@@ -500,7 +500,7 @@ get_option(story_vars* rc, txtr_info* ti){
 void
 parse_option(
 	FILE* f, struct story* s,
-	struct styling* style, story_vars* conds
+	struct styling* style, sv_changes* conds
 ){
 	struct option* o = get_option(conds, &style->option);
 
@@ -599,7 +599,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 	story->location = start_chapter;
 
 	struct styling style;
-	struct story_vars option_conds;
+	struct sv_changes option_conds;
 
 	int c;
 	while(EOF != (c = fgetc(f)){
