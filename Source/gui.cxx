@@ -166,7 +166,11 @@ render_element(UI_element& obj, gui_core& gui, assets& assets){
 int
 create_story_display(gui_core& gui, assets& assets, struct story& story){
 	UI_element element;
-	void* location = story.tag_map[story.location];
+	struct paragraph* location = (struct paragraph*)story.tag_map[story.location];
+	if(location->t != PRG){
+		fprintf(stderr, "Location set to nexus \"%s\"\n", story.location);
+		exit(1);
+	}
 	auto& story_text = location->text;
 	auto& border = location->txtr_data.border;
 	if(main_assets.textures.contains(border)){
