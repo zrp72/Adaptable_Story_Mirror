@@ -120,7 +120,7 @@ dynamic_append(struct zstring* string, char c){
 }
 
 void
-dynamic_mappend(struct zstring* s, char* mc){
+dynamic_mappend(struct zstring* s, const char* mc){
 	for(int i = 0; mc[i] != '\0'; i++){
 		dynamic_append(s, mc[i]);
 	}
