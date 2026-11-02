@@ -567,7 +567,7 @@ parse_paragraph(
 
 	if( '(' == fmove_pw(f) ){
 		fseek(f, 1, SEEK_CUR);
-		parse_sv_changes(f, &p->changes, ')');
+		parse_sv_changes(f, &p->changes, ")");
 		fmove_pw(f);
 	}
 
