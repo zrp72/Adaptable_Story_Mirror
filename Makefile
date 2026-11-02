@@ -30,7 +30,7 @@ obj_files = \
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -std=c++20 -c $< -o $@
 
 ASM: $(obj_files)
-	$(CXX) $(LDLIBS) $^ -o ASM
+	$(CXX) $^ $(LDLIBS) -o ASM
 
 clean:
 	rm -f *.o

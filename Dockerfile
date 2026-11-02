@@ -20,7 +20,8 @@ COPY Source/* ${dest}/Source
 COPY Include/* ${dest}/Include
 WORKDIR ${dest}
 
-RUN make CXXFLAGS=-std=c++20 CPPFLAGS=-IInclude 2>&1
+# RUN make CXXFLAGS=-std=c++20 CPPFLAGS=-IInclude 2>&1
 
 
-CMD ["/src/Adaptable_Story_Mirror/ASM"]
+# CMD ["/src/Adaptable_Story_Mirror/ASM"]
+CMD /bin/sh
