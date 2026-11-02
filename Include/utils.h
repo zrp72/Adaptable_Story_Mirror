@@ -60,22 +60,22 @@ struct string {
 };
 //THIS IS PLACEHOLDER UNTIL FULL C UMAP IMPLEMENTATION
 struct string_hash {
-	size_t operator()(const string& s) const noexcept {
+	size_t operator()(const string& s) const noexcept { const
 		return std::hash<std::string_view>{}(s.text);
 	}
 };
 struct string_equal {
-	bool operator()(const string& a, const string& b) const noexcept {
+	bool operator()(const string& a, const string& b) const noexcept { const
 		return std::strcmp(a.text, b.text) == 0;
 	}
 };
 struct char_ptr_hash {
-	size_t operator()(char* s) const noexcept {
+	size_t operator()(char* s) const noexcept { const
 		return std::hash<std::string_view>{}(s);
 	}
 };
 struct char_ptr_equal {
-	bool operator()(const char* a, const char* b) const noexcept {
+	bool operator()(const char* a, const char* b) const noexcept { const
 		return std::strcmp(a, b) == 0;
 	}
 };
