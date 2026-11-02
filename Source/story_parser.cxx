@@ -586,7 +586,7 @@ parse_paragraph(
 
 void
 free_prg(struct paragraph* p){
-	for(auto& o : value.options){
+	for(auto& o : p->options){
 		free_option(o);
 	}
 	delete p;
