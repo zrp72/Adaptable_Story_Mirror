@@ -16,12 +16,10 @@ RUN mkdir -p ${dest}
 RUN mkdir -p ${dest}/Source
 RUN mkdir -p ${dest}/Include
 COPY * ${dest}
-COPY Source/* ${dest}/Source
+COPY Source/*.c Source/*.cxx ${dest}/Source
 COPY Include/* ${dest}/Include
 WORKDIR ${dest}
 
-# RUN make CXXFLAGS=-std=c++20 CPPFLAGS=-IInclude 2>&1
+RUN make CXXFLAGS=-std=c++20 CPPFLAGS=-IInclude 2>&1
 
-
-# CMD ["/src/Adaptable_Story_Mirror/ASM"]
-CMD /bin/sh
+CMD ["/src/Adaptable_Story_Mirror/ASM"]

@@ -37,3 +37,6 @@ clean:
 
 image:
 	docker build -t adaptable-story-mirror .
+
+run:
+	docker run adaptable-story-mirror
