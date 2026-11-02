@@ -534,9 +534,6 @@ parse_sv_changes(FILE* f, sv_changes* svc){
 		printf("No story variables found to parse.");
 	}
 	free_string(&cdg);
-	return c;
-}
-
 }
 
 struct option*
