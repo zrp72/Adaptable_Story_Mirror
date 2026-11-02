@@ -23,16 +23,14 @@ compare_sv(int val1, int op, int val2){
 	exit(1);
 }
 
-struct zstring
+struct zstring&
 get_destination(story &story, nexus &nexus){
 
 	auto& data = story.data_groups;
 
 	nexus.visits += 1;
 
-	std::vector<std::pair<char, int>> destination;
 	int highest_exit_group = -1;
-
 	int current_exit_group = -1;
 	for(auto& eg : nexus.exits){
 		current_exit_group += 1;
@@ -42,14 +40,14 @@ get_destination(story &story, nexus &nexus){
 			if( 0 == strncmp(dc.dg.text, "reserved", 8) ){
 				if( 0 == strncmp(dc.var.text, "visit", 5) ){
 					viable = compare_sv(dc.val, dc.op, nexus.visits);
-				} else {
-					if(!data.contains(dc.dg)){
-						fprintf(stderr, "Attempted to compare against nonexistant data group \"%s\"\n", dc.dg.text);
-					} else if( !data[dc.dg].contains(dc.var) ){
-						continue;
-					}
-					viable = compare_sv(dc.val, dc.op, data[dc.dg][dc.var]);
 				}
+			} else {
+				if( !data.contains(dc.dg) ){
+					fprintf(stderr, "Attempted to compare against nonexistant data group \"%s\"\n", dc.dg.text);
+				} else if( !data[dc.dg].contains(dc.var) ){
+					continue;
+				}
+				viable = compare_sv(dc.val, dc.op, data[dc.dg][dc.var]);
 			}
 			if(!viable){
 				break;
@@ -60,15 +58,18 @@ get_destination(story &story, nexus &nexus){
 		highest_exit_group = current_exit_group;
 	}
 	if(highest_exit_group == -1){
-		debug("No exit found for nexus.\n");
+		//TODO: Print nexus tag
+		fprintf(stderr, "No exit found for nexus\n");
+		exit(1);
 	}
 
 	auto& exits = nexus.exits.at(highest_exit_group).exits;
 	if(exits.size() == 0){
-		debug("Nexus exit group has no exits.\n");
+		fprintf(stderr, "Nexus exit group has no exits\n");
+		exit(1);
 	}
 	int exit = randomize_number(exits.size() - 1);
-	return &exits.at(exit);
+	return exits.at(exit);
 }
 
 void
