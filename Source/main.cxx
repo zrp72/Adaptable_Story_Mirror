@@ -3,7 +3,9 @@
 #include <SDL3/SDL_filesystem.h>
 
 #include "utils.h"
+extern "C" {
 #include "instruction_loader.h"
+}
 #include "story_parser.h"
 #include "gui.h"
 #include "glyphtext.h"
