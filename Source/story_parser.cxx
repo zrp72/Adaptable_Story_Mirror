@@ -44,8 +44,8 @@ fmove_pw_sl(FILE* f){
 //Match key iteratively
 int
 match_key(
-	char c, 
-	char* key, 
+	char c,
+	char* key,
 	int pos
 ){
 	if(c == key[pos]){
@@ -126,11 +126,11 @@ gfss_tsc(FILE* f, struct string* string, const char* end){
 //Returns 1 if the key was found
 //Places the file iterator
 //	past the end character
-//Trims trailing whitespace 
-//	if string is the last 
+//Trims trailing whitespace
+//	if string is the last
 //	char read is \n
 int
-gfss_tmc(FILE* f, struct string* string, char* end){	
+gfss_tmc(FILE* f, struct string* string, char* end){
 
 	int ki = 0;
 	int c;
@@ -149,7 +149,7 @@ gfss_tmc(FILE* f, struct string* string, char* end){
 		case 1:
 			goto finished;
 		}
-		
+
 		dynamic_append(string, c);
 	}
 finished:
@@ -235,7 +235,7 @@ parse_sv_change(FILE* f, struct string* dg, struct data_change* dc, struct strin
 	dc->var = get_string(8);
 	int c = gfss_tsc(f, &dc->var, ends->text);
 	trim_tw(&dc->var);
-	
+
 	if( c != '\0' && NULL == strchr("><-=+", c) ){
 		fprintf(stderr, "No change operator found for change to variable \"%s\" in data group \"%s\"\n",
 			dc->var.text, dg->text
@@ -254,7 +254,7 @@ parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 	struct string e = get_string(8);
 	dynamic_mappend(&e, "><-=+");
 	dynamic_mappend(&e, ends);
-	
+
 	while( EOF != (c = fmove_pw(f)) ){
 		if( list_contains_c(ends, c) ){
 			break;
@@ -323,7 +323,7 @@ parse_nexus(FILE* f, story* s){
 	trim_tw(&tag);
 	if(s->tag_map.contains(tag)){
 		fprintf(stderr,
-			"Second declaration of nexus tag <%s>", 
+			"Second declaration of nexus tag <%s>",
 			tag.text
 		);
 		exit(1);
@@ -334,7 +334,7 @@ parse_nexus(FILE* f, story* s){
 
 	int c;
 	struct exit_group eg = get_ext_grp();
-	while(']' != (c != fmove_pw(f)) && c != '\0' &&  
+	while(']' != (c != fmove_pw(f)) && c != '\0' &&
 		']' != parse_sv_changes(f, &eg.conds, ":]")
 	){
 		fmove_pw(f);
@@ -447,7 +447,7 @@ fread_glyphtext(
 	vector<glyph>* cntr, struct styling* s,
 	const char* ends
 ){
-	bool dnt = false; 
+	bool dnt = false;
 	if( 0 == strncmp(ends, "\n\n", 2) ){
 		dnt = true;
 		ends += 2;
@@ -480,7 +480,7 @@ fread_glyphtext(
 					}
 					break;
 				}
-			}	
+			}
 		}
 		glyph g;
 		g.unicode = c;
@@ -658,7 +658,7 @@ free_story(struct story* s){
 			free_nxs(&value);
 		} else if(value->t == PRG) {
 			free_prg(value);
-		}	
+		}
 	}
 }
 
