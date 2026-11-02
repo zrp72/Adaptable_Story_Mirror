@@ -5,6 +5,7 @@
 #include <stdexcept> //may not be needed
 #include <cerrno>
 
+#include "gui.h"
 #include "story_parser.h"
 #include "utils.h"
 
