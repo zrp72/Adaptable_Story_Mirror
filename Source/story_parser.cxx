@@ -521,7 +521,7 @@ parse_option(
 
 	if( '(' == fmove_pw(f) ){
 		fseek(f, 1, SEEK_CUR);
-		parse_sv_changes(f, &o.changes, ")");
+		parse_sv_changes(f, &o->changes, ")");
 		fmove_pw(f);
 	}
 
