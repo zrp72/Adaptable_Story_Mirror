@@ -14,14 +14,14 @@ enum LCTN_T{
 };
 
 struct data_change {
-	struct string dg;
-	struct string var;
+	struct zstring dg;
+	struct zstring var;
 	int op;
 	int val;
 };
 using sv_changes = std::vector<data_change>;
-using data_group = std::unordered_map<struct string, int, string_hash, string_equal>;
-using story_vars = std::unordered_map<struct string, data_group, string_hash, string_equal>;
+using data_group = std::unordered_map<struct zstring, int, string_hash, string_equal>;
+using story_vars = std::unordered_map<struct zstring, data_group, string_hash, string_equal>;
 
 struct txtr_info {
 	//This will be changed to struct string once other files are updated
@@ -36,12 +36,12 @@ struct styling {
 	txtr_info paragraph;
 	txtr_info option;
 	glyph_styling glyph;
-	std::unordered_map<struct string, struct string, string_hash> markers;
+	std::unordered_map<struct zstring, struct zstring, string_hash> markers;
 };
 
 struct option {
 	vector<glyph> prompt;
-	struct string dst_label;
+	struct zstring dst_label;
 	sv_changes reveal_conds;
 	sv_changes changes;
 	txtr_info txtr_data;
@@ -58,7 +58,7 @@ struct paragraph {
 
 struct exit_group {
 	sv_changes conds;
-	vector<struct string> exits;
+	vector<struct zstring> exits;
 };
 
 struct nexus {
@@ -69,11 +69,11 @@ struct nexus {
 };
 
 struct story {
-	std::unordered_map<struct string, void*, string_hash> tag_map;
+	std::unordered_map<struct zstring, void*, string_hash> tag_map;
 	vector<glyph> used_glyphs;
-	struct string location;
+	struct zstring location;
 	story_vars data_groups;
-	std::unordered_map<struct string, struct string, string_hash> dg_aliases;
+	std::unordered_map<struct zstring, struct zstring, string_hash> dg_aliases;
 };
 
 struct story* parse_story_file(const char* filepath, char* start_chapter);
