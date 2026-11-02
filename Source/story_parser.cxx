@@ -608,7 +608,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 	sv_changes option_conds;
 
 	int c;
-	while(EOF != (c = fgetc(f)){
+	while( EOF != (c = fgetc(f)) ){
 		if(isspace(c)||c == '_'||c == '|'){
 			continue;
 		}
