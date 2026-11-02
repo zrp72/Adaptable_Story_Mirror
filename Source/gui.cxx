@@ -214,7 +214,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 
 	struct paragraph* location = (struct paragraph*)story.tag_map[story.location];
 	if(location->t == NXS){
-		fprintf("Story location set to nexus \"%s\"\n", story.location.text);
+		fprintf(stderr, "Story location set to nexus \"%s\"\n", story.location.text);
 		exit(1);
 	}
 
