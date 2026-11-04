@@ -7,6 +7,8 @@
 /#rgba(255, 255, 255, 255):(white)
 /#bold(1):(bold)
 
+/Markers can be undefined with \marker_name
+
 /| is used to set global styling. It uses the same change types(except for nwln) as markers, but excludes the marker name and its preceding colon.
 /It also has the additional change types op_b & pg_b, standing for option border and paragraph border accordingly.
 /Examples:
@@ -14,7 +16,37 @@
 /|op_b(option_border_intricate)
 
 /& defines a data group, and @ defines references to that data group. Multiple references can be defined.
+/Variables can be accessed in the proper locations via "<data_group_name> var_name + 1, ..."
+/Once the data group is set, variables can be comma seperated without redeclaration. Data group can be changed for each variable.
+/Acceptable operations are +-=, and =<> depending on whether its being used as a change or a check.
 
+/The main story components are nexuses, options, and paragraphs.
+
+/Nexus definition:
+/[nexus_tag: 
+		<data_group> stat1 = 1, stat2 > 1, 
+		stat3 < 1:
+		exit_paragraph1
+		exit_paragraph2
+
+		default:
+		fallback_exit
+]
+
+/An exit group is defined by its conditions and exits. A single exit group ends on a double newline. While exit group conditions can spread between lines up until a colon, exit paragraph names must be on one line.
+/An exit group exit can be another nexus.
+/The first exit group that the global story variables succeed in passing is the one the player is sent to.
+/If multiple exits are in an exit group, the player is sent to a random one.
+
+/Options are defined as so: 
+/(optional_reveal_conds){src_paragraph:dst_paragraph}(optional_option_changes) prompt
+
+/the option reveal conds consist for every option until the next paragraph. If they need to be cleared, just put empty parenthesis. ()
+
+/Paragraphs are defined as:
+/Paragraph_tag:(optional_changes) Paragraph text
+
+/paragraphs are terminated at double newline.
 
 @stats
 &stats:st
