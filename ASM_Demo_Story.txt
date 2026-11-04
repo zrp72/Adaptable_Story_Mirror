@@ -1,3 +1,21 @@
+/Summary of language syntax:
+/# is used to define a marker, which can be used in text to set local stylistic choices. Also, as newline characters are trimmed in displayed text, change type nwln will set a marker to create a newline.
+/#change_type(change_parameter):marker_name
+/Examples:
+/#nwln:\n
+/#font(arial):<F|A>
+/#rgba(255, 255, 255, 255):(white)
+/#bold(1):(bold)
+
+/| is used to set global styling. It uses the same change types(except for nwln) as markers, but excludes the marker name and its preceding colon.
+/It also has the additional change types op_b & pg_b, standing for option border and paragraph border accordingly.
+/Examples:
+/|pg_b(paragraph_border_intricate)
+/|op_b(option_border_intricate)
+
+/& defines a data group, and @ defines references to that data group. Multiple references can be defined.
+
+
 @stats
 &stats:st
 
