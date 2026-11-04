@@ -1,4 +1,6 @@
 /Summary of language syntax:
+/(Forward slash comments out the line)
+
 /# is used to define a marker, which can be used in text to set local stylistic choices. Also, as newline characters are trimmed in displayed text, change type nwln will set a marker to create a newline.
 /#change_type(change_parameter):marker_name
 /Examples:
@@ -24,14 +26,14 @@
 
 /Nexus definition:
 /[nexus_tag: 
-		<data_group> stat1 = 1, stat2 > 1, 
-		stat3 < 1:
-		exit_paragraph1
-		exit_paragraph2
-
-		default:
-		fallback_exit
-]
+/		<data_group> stat1 = 1, stat2 > 1, 
+/		stat3 < 1:
+/		exit_paragraph1
+/		exit_paragraph2
+/
+/		default:
+/		fallback_exit
+/]
 
 /An exit group is defined by its conditions and exits. A single exit group ends on a double newline. While exit group conditions can spread between lines up until a colon, exit paragraph names must be on one line.
 /An exit group exit can be another nexus.
