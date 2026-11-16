@@ -7,15 +7,6 @@ else
     HOME_DIR ?= $(HOME)
 endif
 
-CXXFLAGS = -std=c++20
-CPPFLAGS = \
-	-IInclude \
-	-I$(HOME_DIR)\Documents\SDKs\SDL\x86_64-w64-mingw32\include \
-	-I$(HOME_DIR)\Documents\SDKs\SDL_image\x86_64-w64-mingw32\include \
-	-I$(HOME_DIR)\Documents\SDKs\SDL_ttf\x86_64-w64-mingw32\include
-
-LDLIBS = -lSDL3 -lSDL3_image -lSDL3_ttf
-
 obj_files = \
 	Source/main.o \
 	Source/instruction_loader.o \
@@ -26,11 +17,20 @@ obj_files = \
 	Source/progress_story.o \
 	Source/utils.o
 
+CXXFLAGS = -std=c++20
+CPPFLAGS = \
+	-IInclude \
+	-I$(HOME_DIR)\Documents\SDKs\SDL\x86_64-w64-mingw32\include \
+	-I$(HOME_DIR)\Documents\SDKs\SDL_image\x86_64-w64-mingw32\include \
+	-I$(HOME_DIR)\Documents\SDKs\SDL_ttf\x86_64-w64-mingw32\include
+
+LDLIBS = -lSDL3 -lSDL3_image -lSDL3_ttf
+
 %.o: %.cxx
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -std=c++20 -c $< -o $@
 
 ASM: $(obj_files)
-	$(CXX) $^ $(LDLIBS) -o ASM
+	$(CXX) $^ -o ASM $(LDLIBS) -LInclude 
 
 clean:
 	rm -f *.o
