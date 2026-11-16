@@ -4,10 +4,11 @@
 //File move past char
 //Returns false on EOF
 bool
-fmove_pc(FILE* file, char target){
+fmove_nextline(FILE* file, int* line){
 	char c;
 	while(EOF != (c = fgetc(file))){
-		if(c == target){
+		if(c == '\n'){
+			*line += 1;
 			return true;
 		}
 	}
@@ -103,9 +104,12 @@ gss_tsc(const char* start, struct zstring* s, const char* ends){
 //|Trims whitespace if string is
 //	terminated on \n
 int
-gfss_tsc(FILE* f, struct zstring* string, const char* end){
+gfss_tsc(FILE* f, struct zstring* string, const char* end, int* line){
 	int c;
 	while(EOF != (c = fgetc(f))){
+		if(c == '\n'){
+			*line += 1;
+		}
 		if(list_contains_c(end, c)){
 			break;
 		}
@@ -181,22 +185,22 @@ use_fint(FILE* f, int* trg, int op){
 }
 
 void
-create_data_group(FILE* f, struct story* s){
+create_data_group(FILE* f, struct story* s, int* line){
 	struct zstring name = get_string(8);
-	gfss_tsc(f, &name, "\n");
+	gfss_tsc(f, &name, "\n", line);
 	data_group dg;
 	s->data_groups[name] = dg;
 }
 
 void
-add_dg_alias(FILE* f, struct story* s){
+add_dg_alias(FILE* f, struct story* s, int* line){
 	struct zstring dg = get_string(8);
-	if('\n' == gfss_tsc(f, &dg, ":\n")){
+	if( '\n' == gfss_tsc(f, &dg, ":\n", line) ){
 		printf("dg alias ended at \\n before finding the alias: %s", dg.text);
 		return;
 	}
 	struct zstring alias = get_string(8);
-	gfss_tsc(f, &alias, "\n");
+	gfss_tsc(f, &alias, "\n", line);
 	if( s->dg_aliases.contains(alias) ){
 		fprintf(stderr, "Attempted to redefine dg alias \"%s\"\n", alias.text);
 		exit(1);
@@ -205,33 +209,33 @@ add_dg_alias(FILE* f, struct story* s){
 }
 
 void
-remove_marker(FILE* f, struct styling* s){
+remove_marker(FILE* f, struct parse_rundata* prd){
 	struct zstring marker = get_string(8);
-	gfss_tsc(f, &marker, "\n");
-	if(s->markers.contains(marker)){
+	gfss_tsc(f, &marker, "\n", &prd->line);
+	if(prd->markers.contains(marker)){
 		// TODO: Fix memory leak
-		s->markers.erase(marker);
+		prd->markers.erase(marker);
 	}
 	free_string(&marker);
 }
 
 void
-define_marker(FILE* f, struct styling* db){
+define_marker(FILE* f, struct parse_rundata* prd){
 	struct zstring change = get_string(8);
-	gfss_tsc(f, &change, ":");
+	gfss_tsc(f, &change, ":", &prd->line);
 	struct zstring marker = get_string(8);
-	gfss_tsc(f, &marker, "\n");
-	db->markers[marker] = change;
+	gfss_tsc(f, &marker, "\n", &prd->line);
+	prd->markers[marker] = change;
 	//TODO: Update how markers are stored so one marker
 	//		can apply multiple changes.
 }
 
 void
-parse_sv_change(FILE* f, struct zstring* dg, struct data_change* dc, struct zstring* ends){
+parse_sv_change(FILE* f, struct zstring* dg, struct data_change* dc, struct zstring* ends, int* line){
 
 	dc->dg = duplicate_string(dg);
 	dc->var = get_string(8);
-	int c = gfss_tsc(f, &dc->var, ends->text);
+	int c = gfss_tsc(f, &dc->var, ends->text, line);
 	trim_tw(&dc->var);
 
 	if( c != '\0' && NULL == strchr("><-=+", c) ){
@@ -246,7 +250,7 @@ parse_sv_change(FILE* f, struct zstring* dg, struct data_change* dc, struct zstr
 }
 
 int
-parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
+parse_sv_changes(FILE* f, sv_changes* svc, const char* ends, int* line){
 	int c;
 	struct zstring cdg = get_string(8);
 	struct zstring e = get_string(8);
@@ -260,7 +264,7 @@ parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 
 		if(c == '<'){
 			clear_string(&cdg);
-			if('>' != (gfss_tsc(f, &cdg, e.text)) ){
+			if('>' != (gfss_tsc(f, &cdg, e.text, line)) ){
 				fprintf(stderr, "sv changes closed while changing data group: \"%s\"\n", cdg.text);
 				exit(1);
 			}
@@ -271,7 +275,7 @@ parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 			fseek(f, 1, SEEK_CUR);
 		} else {
 			struct data_change dc;
-			parse_sv_change(f, &cdg, &dc, &e);
+			parse_sv_change(f, &cdg, &dc, &e, line);
 		}
 	}
 	if(svc->empty()){
@@ -297,11 +301,11 @@ get_ext_grp(){
 }
 
 void
-parse_ext_grp(FILE* f, struct exit_group* eg){
+parse_ext_grp(FILE* f, struct exit_group* eg, int* line){
 
 	struct zstring e = get_string(8);
 	while('\n' != fmove_pw_sl(f)){
-		int c = gfss_tsc(f, &e, "\n]");
+		int c = gfss_tsc(f, &e, "\n]", line);
 		if(e.len > 0){
 			eg->exits.push_back( duplicate_string(&e) );
 		}
@@ -315,9 +319,9 @@ parse_ext_grp(FILE* f, struct exit_group* eg){
 }
 
 void
-parse_nexus(FILE* f, story* s){
+parse_nexus(FILE* f, story* s, int* line){
 	struct zstring tag = get_string(8);
-	gfss_tsc(f, &tag, ":");
+	gfss_tsc(f, &tag, ":", line);
 	trim_tw(&tag);
 	if(s->tag_map.contains(tag)){
 		fprintf(stderr,
@@ -333,10 +337,10 @@ parse_nexus(FILE* f, story* s){
 	int c;
 	struct exit_group eg = get_ext_grp();
 	while(']' != (c = fmove_pw(f)) && c != '\0' &&
-		']' != parse_sv_changes(f, &eg.conds, ":]")
+		']' != parse_sv_changes(f, &eg.conds, ":]", line)
 	){
 		fmove_pw(f);
-		parse_ext_grp(f, &eg);
+		parse_ext_grp(f, &eg, line);
 		nxs->exits.push_back(eg);
 		eg = get_ext_grp();
 	}
@@ -417,7 +421,7 @@ parse_change_text(struct zstring* s){
 }
 
 void
-update_styling(struct styling* s, struct zstring* change){
+update_styling(struct parse_rundata* s, struct zstring* change){
 	char* t = change->text;
 	if(0 == strncmp(t, "bold", TOKEN_LENGTH)){
 		s->glyph.bold = !!parse_change_number(change);
@@ -442,7 +446,7 @@ update_styling(struct styling* s, struct zstring* change){
 int
 fread_glyphtext(
 	FILE* f,
-	vector<glyph>* cntr, struct styling* s,
+	vector<glyph>* cntr, struct parse_rundata* s,
 	const char* ends
 ){
 	bool dnt = false;
@@ -499,31 +503,31 @@ get_option(sv_changes* rc, txtr_info* ti){
 void
 parse_option(
 	FILE* f, struct story* s,
-	struct styling* style, sv_changes* conds
+	struct parse_rundata* prd, sv_changes* conds
 ){
-	struct option* o = get_option(conds, &style->option);
+	struct option* o = get_option(conds, &prd->option);
 
 	struct zstring base = get_string(8);
 	fmove_pw(f);
-	if( '}' == gfss_tsc(f, &base, ":}") ){
+	if( '}' == gfss_tsc(f, &base, ":}", &prd->line) ){
 		fprintf(stderr, "No destination found for option on paragraph \"%s\".\n", base.text);
 		exit(1);
 	}
 
 	fmove_pw(f);
 	struct zstring dst = get_string(8);
-	gfss_tsc(f, &dst, "}");
+	gfss_tsc(f, &dst, "}", &prd->line);
 
 	trim_tw(&base);
 	trim_tw(&dst);
 
 	if( '(' == fmove_pw(f) ){
 		fseek(f, 1, SEEK_CUR);
-		parse_sv_changes(f, &o->changes, ")");
+		parse_sv_changes(f, &o->changes, ")", &prd->line);
 		fmove_pw(f);
 	}
 
-	fread_glyphtext(f, &o->prompt, style, "\n");
+	fread_glyphtext(f, &o->prompt, prd, "\n");
 	s->used_glyphs.insert(s->used_glyphs.end(),
 		o->prompt.begin(), o->prompt.end()
 	);
@@ -554,22 +558,22 @@ get_prg(){
 void
 parse_paragraph(
 	FILE* f, struct story* s,
-	struct styling* style
+	struct parse_rundata* prd 
 ){
 	struct paragraph* p = get_prg();
-	p->txtr_data = style->paragraph;
+	p->txtr_data = prd->paragraph;
 
 	struct zstring name = get_string(8);
-	gfss_tsc(f, &name, ":");
+	gfss_tsc(f, &name, ":", &prd->line);
 	trim_tw(&name);
 
 	if( '(' == fmove_pw(f) ){
 		fseek(f, 1, SEEK_CUR);
-		parse_sv_changes(f, &p->changes, ")");
+		parse_sv_changes(f, &p->changes, ")", &prd->line);
 		fmove_pw(f);
 	}
 
-	fread_glyphtext(f, &p->text, style, "\n\n");
+	fread_glyphtext(f, &p->text, prd, "\n\n");
 	s->used_glyphs.insert(s->used_glyphs.end(),
 		p->text.begin(), p->text.end()
 	);
@@ -603,49 +607,53 @@ parse_story_file(const char* filepath, char* start_chapter){
 	story->location = get_string(4);
 	dynamic_mappend(&story->location, start_chapter);
 
-	struct styling style;
+	struct parse_rundata prd;
 	sv_changes option_conds;
 
+	prd.line = 0;
 	int c;
 	while( EOF != (c = fgetc(f)) ){
 		if(isspace(c)||c == '_'||c == '|'){
+			if(c == '\n'){
+				prd.line += 1;
+			}
 			continue;
 		}
 		switch(c){
 		case '/':
-			fmove_pc(f, '\n');
+			fmove_nextline(f, &prd.line);
 			continue;
 		case '\\':
-			remove_marker(f, &style);
+			remove_marker(f, &prd);
 			continue;
 		case '#':
-			define_marker(f, &style);
+			define_marker(f, &prd);
 			continue;
 		case '|': {
 			struct zstring alteration = get_string(8);
-			gfss_tsc(f, &alteration, "\n");
-			update_styling(&style, &alteration);
+			gfss_tsc(f, &alteration, "\n", &prd.line);
+			update_styling(&prd, &alteration);
 			free_string(&alteration);
 			continue;
 		}
 		case '@':
-			create_data_group(f, story);
+			create_data_group(f, story, &prd.line);
 			continue;
 		case '&':
-			add_dg_alias(f, story);
+			add_dg_alias(f, story, &prd.line);
 			continue;
 		case '[':
-			parse_nexus(f, story);
+			parse_nexus(f, story, &prd.line);
 			continue;
 		case '(':
-			parse_sv_changes(f, &option_conds, ")");
+			parse_sv_changes(f, &option_conds, ")", &prd.line);
 			continue;
 		case '{':
-			parse_option(f, story, &style, &option_conds);
+			parse_option(f, story, &prd, &option_conds);
 			continue;
 		default:
 			ungetc(c, f);
-			parse_paragraph(f, story, &style);
+			parse_paragraph(f, story, &prd);
 			option_conds.clear();
 		}
 	}

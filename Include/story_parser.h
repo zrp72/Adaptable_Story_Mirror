@@ -32,7 +32,8 @@ struct txtr_info {
 	char* exit_anim;
 };
 
-struct styling {
+struct parse_rundata {
+	int line;
 	txtr_info paragraph;
 	txtr_info option;
 	glyph_styling glyph;
