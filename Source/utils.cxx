@@ -30,6 +30,14 @@ xrealloc(void* p, size_t new_size){
 	return n;
 }
 
+struct tFILE*
+tfopen(char* file, char* flags){
+	struct tFILE* tf = xmalloc(sizeof tFILE);
+	tf->data = fopen(file, flags);
+	tf->line = 0;
+	return tf;
+}
+
 void
 init_string(struct zstring* string, size_t cap){
 	string->len = 0;
