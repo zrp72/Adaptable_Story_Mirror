@@ -215,7 +215,7 @@ parse_sv_change(tFILE* f, struct zstring* dg, struct data_change* dc, struct zst
 	int c = gfss_tsc(f, &dc->var, ends->text);
 	trim_tw(&dc->var);
 
-	if( c != '\0' && NULL == strchr("><-=+", c) ){
+	if( NULL == strchr("><-=+", c) ){
 		fprintf(stderr, "No change operator found for change to variable \"%s\" in data group \"%s\"\n",
 			dc->var.text, dg->text
 		);
