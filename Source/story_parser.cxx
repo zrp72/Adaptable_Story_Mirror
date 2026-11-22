@@ -363,7 +363,7 @@ free_nxs(struct nexus* nxs){
 */
 
 long
-parse_change_number(struct zstring* s){
+parse_styling_number(struct zstring* s){
 	char* t = s->text;
 	if(t[TOKEN_LENGTH] != '('){
 		fprintf(stderr, "Invalid change: %s\n", t);
@@ -420,15 +420,15 @@ void
 update_styling(struct parse_rundata* s, struct zstring* change){
 	char* t = change->text;
 	if(0 == strncmp(t, "bold", TOKEN_LENGTH)){
-		s->glyph.bold = !!parse_change_number(change);
+		s->glyph.bold = !!parse_styling_number(change);
 	} else if( strncmp(t, "itlc", TOKEN_LENGTH) ) {
-		s->glyph.italic = !!parse_change_number(change);
+		s->glyph.italic = !!parse_styling_number(change);
 	} else if( strncmp(t, "font", TOKEN_LENGTH) ) {
 		s->glyph.font = parse_change_text(change);
 	} else if( strncmp(t, "rgba", TOKEN_LENGTH) ) {
 		s->glyph.color = parse_rgba_change(change);
 	} else if( strncmp(t, "size", TOKEN_LENGTH) ) {
-		s->glyph.size = parse_change_number(change);
+		s->glyph.size = parse_styling_number(change);
 	} else if( strncmp(t, "pg_b", TOKEN_LENGTH) ) {
 		s->paragraph.border = parse_change_text(change);
 	} else if( strncmp(t, "op_b", TOKEN_LENGTH) ) {
