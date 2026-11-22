@@ -18,11 +18,11 @@ fmove_nl(tFILE* file){
 //Returns -1 on EOF
 //Otherwise returns the first non-ws char
 int
-fmove_pw(FILE* f){
+fmove_pw(tFILE* f){
 	int c;
-	while(EOF != (c = fgetc(f))){
+	while(EOF != (c = tfgetc(f))){
 		if(!isspace(c)){
-			ungetc(c, f);
+			tungetc(c, f);
 			return c;
 		}
 	}
@@ -30,11 +30,11 @@ fmove_pw(FILE* f){
 }
 
 int
-fmove_pw_sl(FILE* f){
+fmove_pw_sl(tFILE* f){
 	int c;
-	while(EOF != (c = fgetc(f))){
+	while(EOF != (c = tfgetc(f))){
 		if( !isspace(c) || c == '\n' ){
-			ungetc(c, f);
+			tungetc(c, f);
 			return c;
 		}
 	}
@@ -130,11 +130,11 @@ gfss_tsc(tFILE* f, struct zstring* string, const char* end){
 //	if string is the last
 //	char read is \n
 int
-gfss_tmc(FILE* f, struct zstring* string, char* end){
+gfss_tmc(tFILE* f, struct zstring* string, char* end){
 
 	int ki = 0;
 	int c;
-	while(EOF != (c = fgetc(f))){
+	while(EOF != (c = tfgetc(f))){
 		int s = match_key(c, end, ki);
 		switch(s){
 		case -2://todo: is this even needed?
@@ -162,26 +162,26 @@ finished:
 }
 
 int
-use_fint(FILE* f, int* trg, int op){
+use_fint(tFILE* f, int* trg, int op){
 	int a;
 	fscanf(f, "%8d", &a);
 	switch(op){
 	case '+':
 		*trg += a;
-		return fgetc(f);
+		return tfgetc(f);
 	case '-':
 		*trg -= a;
-		return fgetc(f);
+		return tfgetc(f);
 	case '=':
 		*trg = a;
-		return fgetc(f);
+		return tfgetc(f);
 	}
 	fprintf(stderr, "Invalid operation type: \"%c\"\n", op);
 	exit(1);
 }
 
 void
-create_data_group(FILE* f, struct story* s){
+create_data_group(tFILE* f, struct story* s){
 	struct zstring name = get_string(8);
 	gfss_tsc(f, &name, "\n");
 	data_group dg;
@@ -189,7 +189,7 @@ create_data_group(FILE* f, struct story* s){
 }
 
 void
-add_dg_alias(FILE* f, struct story* s){
+add_dg_alias(tFILE* f, struct story* s){
 	struct zstring dg = get_string(8);
 	if( '\n' == gfss_tsc(f, &dg, ":\n") ){
 		printf("dg alias ended at \\n before finding the alias: %s", dg.text);
@@ -205,7 +205,7 @@ add_dg_alias(FILE* f, struct story* s){
 }
 
 void
-remove_marker(FILE* f, struct parse_rundata* prd){
+remove_marker(tFILE* f, struct parse_rundata* prd){
 	struct zstring marker = get_string(8);
 	gfss_tsc(f, &marker, "\n");
 	if(prd->markers.contains(marker)){
@@ -216,7 +216,7 @@ remove_marker(FILE* f, struct parse_rundata* prd){
 }
 
 void
-define_marker(FILE* f, struct parse_rundata* prd){
+define_marker(tFILE* f, struct parse_rundata* prd){
 	struct zstring change = get_string(8);
 	gfss_tsc(f, &change, ":");
 	struct zstring marker = get_string(8);
@@ -227,7 +227,7 @@ define_marker(FILE* f, struct parse_rundata* prd){
 }
 
 void
-parse_sv_change(FILE* f, struct zstring* dg, struct data_change* dc, struct zstring* ends, int* line){
+parse_sv_change(tFILE* f, struct zstring* dg, struct data_change* dc, struct zstring* ends){
 
 	dc->dg = duplicate_string(dg);
 	dc->var = get_string(8);
@@ -246,7 +246,7 @@ parse_sv_change(FILE* f, struct zstring* dg, struct data_change* dc, struct zstr
 }
 
 int
-parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
+parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 	int c;
 	struct zstring cdg = get_string(8);
 	struct zstring e = get_string(8);
@@ -271,7 +271,7 @@ parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 			fseek(f, 1, SEEK_CUR);
 		} else {
 			struct data_change dc;
-			parse_sv_change(f, &cdg, &dc, &e, line);
+			parse_sv_change(f, &cdg, &dc, &e);
 		}
 	}
 	if(svc->empty()){
@@ -297,7 +297,7 @@ get_ext_grp(){
 }
 
 void
-parse_ext_grp(FILE* f, struct exit_group* eg, int* line){
+parse_ext_grp(tFILE* f, struct exit_group* eg){
 
 	struct zstring e = get_string(8);
 	while('\n' != fmove_pw_sl(f)){
@@ -306,7 +306,7 @@ parse_ext_grp(FILE* f, struct exit_group* eg, int* line){
 			eg->exits.push_back( duplicate_string(&e) );
 		}
 		if(c == ']'){
-			ungetc(c, f);
+			tungetc(c, f);
 			break;
 		}
 		clear_string(&e);
@@ -315,7 +315,7 @@ parse_ext_grp(FILE* f, struct exit_group* eg, int* line){
 }
 
 void
-parse_nexus(FILE* f, story* s){
+parse_nexus(tFILE* f, story* s){
 	struct zstring tag = get_string(8);
 	gfss_tsc(f, &tag, ":");
 	trim_tw(&tag);
@@ -336,7 +336,7 @@ parse_nexus(FILE* f, story* s){
 		']' != parse_sv_changes(f, &eg.conds, ":]")
 	){
 		fmove_pw(f);
-		parse_ext_grp(f, &eg, line);
+		parse_ext_grp(f, &eg);
 		nxs->exits.push_back(eg);
 		eg = get_ext_grp();
 	}
@@ -441,7 +441,7 @@ update_styling(struct parse_rundata* s, struct zstring* change){
 
 int
 fread_glyphtext(
-	FILE* f,
+	tFILE* f,
 	vector<glyph>* cntr, struct parse_rundata* s,
 	const char* ends
 ){
@@ -452,7 +452,7 @@ fread_glyphtext(
 	}
 	int c;
 	struct zstring cache = get_string(8);
-	while( EOF != (c = fgetc(f))){
+	while( EOF != (c = tfgetc(f))){
 		if(dnt){
 			if(c == '\n' && '\n' == fmove_pw_sl(f) ){
 				break;
@@ -498,7 +498,7 @@ get_option(sv_changes* rc, txtr_info* ti){
 
 void
 parse_option(
-	FILE* f, struct story* s,
+	tFILE* f, struct story* s,
 	struct parse_rundata* prd, sv_changes* conds
 ){
 	struct option* o = get_option(conds, &prd->option);
@@ -553,7 +553,7 @@ get_prg(){
 
 void
 parse_paragraph(
-	FILE* f, struct story* s,
+	tFILE* f, struct story* s,
 	struct parse_rundata* prd 
 ){
 	struct paragraph* p = get_prg();
