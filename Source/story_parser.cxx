@@ -4,11 +4,10 @@
 //File move past char
 //Returns false on EOF
 bool
-fmove_nextline(FILE* file, int* line){
+fmove_nl(tFILE* file){
 	char c;
-	while(EOF != (c = fgetc(file))){
+	while(EOF != (c = tfgetc(file))){
 		if(c == '\n'){
-			*line += 1;
 			return true;
 		}
 	}
@@ -610,18 +609,14 @@ parse_story_file(const char* filepath, char* start_chapter){
 	struct parse_rundata prd;
 	sv_changes option_conds;
 
-	prd.line = 0;
 	int c;
-	while( EOF != (c = fgetc(f)) ){
+	while( EOF != (c = tfgetc(f)) ){
 		if(isspace(c)||c == '_'||c == '|'){
-			if(c == '\n'){
-				prd.line += 1;
-			}
 			continue;
 		}
 		switch(c){
 		case '/':
-			fmove_nextline(f, &prd.line);
+			fmove_nt(f);
 			continue;
 		case '\\':
 			remove_marker(f, &prd);
