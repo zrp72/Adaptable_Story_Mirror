@@ -222,7 +222,10 @@ parse_sv_change(tFILE* f, struct zstring* dg, struct data_change* dc, struct zst
 		exit(1);
 	}
 	dc->op = c;
-	fscanf(f, "%8d", &dc->val);
+	//TODO: THIS MIGHT CONSUME NEWLINES AND MESS UP LINE TRACKING
+	if(1 != fscanf(f->data, " %8d", &dc->val)){
+		fprintf(stderr, "(LINE %d)Unexpected data in input stream", f->line);
+	}
 
 }
 
