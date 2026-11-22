@@ -597,7 +597,7 @@ free_prg(struct paragraph* p){
 
 struct story*
 parse_story_file(const char* filepath, char* start_chapter){
-	FILE* f = fopen(filepath, "r");
+	tFILE* f = tfopen(filepath, "r");
 	if(f == NULL){
 		perror(filepath);
 		exit(1);
