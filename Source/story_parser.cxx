@@ -252,7 +252,7 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 			printf("(LINE %d)Active data group not declared during sv parse.", f->line);
 			exit(1);
 		} else if(c == ','){
-			fseek(f, 1, SEEK_CUR);
+			(void)tfgetc(f);
 		} else {
 			struct data_change dc;
 			parse_sv_change(f, &cdg, &dc, &e);
@@ -327,7 +327,7 @@ parse_nexus(tFILE* f, story* s){
 	if(nxs->exits.size() == 0){
 		printf("(LINE %d)Nexus \"%s\" declared with zero exits.", f->line, tag.text);
 	}
-	fseek(f, 1, SEEK_CUR);
+	(void)tfgetc(f);
 }
 
 void
@@ -502,7 +502,7 @@ parse_option(
 	trim_tw(&dst);
 
 	if( '(' == fmove_pw(f) ){
-		fseek(f, 1, SEEK_CUR);
+		(void)tfgetc(f);
 		parse_sv_changes(f, &o->changes, ")");
 		fmove_pw(f);
 	}
@@ -548,7 +548,7 @@ parse_paragraph(
 	trim_tw(&name);
 
 	if( '(' == fmove_pw(f) ){
-		fseek(f, 1, SEEK_CUR);
+		(void)tfgetc(f);
 		parse_sv_changes(f, &p->changes, ")");
 		fmove_pw(f);
 	}
