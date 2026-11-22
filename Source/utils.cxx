@@ -32,7 +32,7 @@ xrealloc(void* p, size_t new_size){
 
 struct tFILE*
 tfopen(const char* file, char* flags){
-	struct tFILE* tf = xmalloc(sizeof tFILE);
+	struct tFILE* tf = (struct tFILE*)xmalloc(sizeof *tf);
 	tf->data = fopen(file, flags);
 	tf->line = 0;
 	return tf;
