@@ -25,7 +25,7 @@ struct tFILE {
 	FILE* data;
 	int line;
 };
-struct tFILE* tfopen(char* file, char* flags);
+struct tFILE* tfopen(const char* file, char* flags);
 void tfclose(tFILE*);
 int tfgetc(tFILE*);
 void tungetc(int c, tFILE*);
