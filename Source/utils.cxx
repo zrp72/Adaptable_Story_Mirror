@@ -53,7 +53,8 @@ tfgetc(tFILE* tf){
 	return c;
 }
 
-void(int c, tFILE* tf){
+void
+tungetc(int c, tFILE* tf){
 	ungetc(c, tf->data);
 	if(c == '\n'){
 		tf->line -= 1;
