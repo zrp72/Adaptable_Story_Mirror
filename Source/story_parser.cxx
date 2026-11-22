@@ -261,11 +261,11 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 		if(c == '<'){
 			clear_string(&cdg);
 			if( '>' != ( gfss_tsc(f, &cdg, e.text) ) ){
-				fprintf(stderr, "sv changes closed while changing data group: \"%s\"\n", cdg.text);
+				fprintf(stderr, "(LINE %d)sv changes closed while changing data group: \"%s\"\n", f->line, cdg.text);
 				exit(1);
 			}
 		} else if(cdg.len == 0) {
-			printf("Active data group not declared during sv parse.");
+			printf("(LINE %d)Active data group not declared during sv parse.", f->line);
 			exit(1);
 		} else if(c == ','){
 			fseek(f, 1, SEEK_CUR);
@@ -275,7 +275,7 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 		}
 	}
 	if(svc->empty()){
-		printf("No story variables found to parse.");
+		printf("(LINE %d)No story variables found to parse.", f->line);
 	}
 	free_string(&cdg);
 	return c;
@@ -321,8 +321,8 @@ parse_nexus(tFILE* f, story* s){
 	trim_tw(&tag);
 	if(s->tag_map.contains(tag)){
 		fprintf(stderr,
-			"Second declaration of nexus tag <%s>",
-			tag.text
+			"(LINE %d)Second declaration of nexus tag <%s>",
+			f->line, tag.text
 		);
 		exit(1);
 	}
@@ -341,7 +341,7 @@ parse_nexus(tFILE* f, story* s){
 		eg = get_ext_grp();
 	}
 	if(nxs->exits.size() == 0){
-		printf("Nexus(%s) declared with zero exits.", tag.text);
+		printf("(LINE %d)Nexus \"%s\" declared with zero exits.", f->line, tag.text);
 	}
 	fseek(f, 1, SEEK_CUR);
 }
