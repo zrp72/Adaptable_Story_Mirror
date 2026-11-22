@@ -248,6 +248,7 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 				fprintf(stderr, "(LINE %d)sv changes closed while changing data group: \"%s\"\n", f->line, cdg.text);
 				exit(1);
 			}
+			trim_tw(&cdg);
 		} else if(cdg.len == 0) {
 			printf("(LINE %d)Active data group not declared during sv parse.", f->line);
 			exit(1);
