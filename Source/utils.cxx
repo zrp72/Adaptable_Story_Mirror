@@ -34,7 +34,7 @@ struct tFILE*
 tfopen(const char* file, const char* flags){
 	struct tFILE* tf = (struct tFILE*)xmalloc(sizeof *tf);
 	tf->data = fopen(file, flags);
-	tf->line = 0;
+	tf->line = 1;
 	return tf;
 }
 
