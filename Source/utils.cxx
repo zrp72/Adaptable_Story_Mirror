@@ -38,10 +38,11 @@ tfopen(const char* file, char* flags){
 	return tf;
 }
 
-void
+int
 tfclose(tFILE* tf){
-	fclose(tf->data);
+	inr r = fclose(tf->data);
 	free(tf);
+	return r;
 }
 
 int
