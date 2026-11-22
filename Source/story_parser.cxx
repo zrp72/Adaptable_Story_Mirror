@@ -103,12 +103,9 @@ gss_tsc(const char* start, struct zstring* s, const char* ends){
 //|Trims whitespace if string is
 //	terminated on \n
 int
-gfss_tsc(FILE* f, struct zstring* string, const char* end, int* line){
+gfss_tsc(tFILE* f, struct zstring* string, const char* end){
 	int c;
-	while(EOF != (c = fgetc(f))){
-		if(c == '\n'){
-			*line += 1;
-		}
+	while(EOF != (c = tfgetc(f))){
 		if(list_contains_c(end, c)){
 			break;
 		}
@@ -186,7 +183,7 @@ use_fint(FILE* f, int* trg, int op){
 void
 create_data_group(FILE* f, struct story* s, int* line){
 	struct zstring name = get_string(8);
-	gfss_tsc(f, &name, "\n", line);
+	gfss_tsc(f, &name, "\n");
 	data_group dg;
 	s->data_groups[name] = dg;
 }
@@ -194,12 +191,12 @@ create_data_group(FILE* f, struct story* s, int* line){
 void
 add_dg_alias(FILE* f, struct story* s, int* line){
 	struct zstring dg = get_string(8);
-	if( '\n' == gfss_tsc(f, &dg, ":\n", line) ){
+	if( '\n' == gfss_tsc(f, &dg, ":\n") ){
 		printf("dg alias ended at \\n before finding the alias: %s", dg.text);
 		return;
 	}
 	struct zstring alias = get_string(8);
-	gfss_tsc(f, &alias, "\n", line);
+	gfss_tsc(f, &alias, "\n");
 	if( s->dg_aliases.contains(alias) ){
 		fprintf(stderr, "Attempted to redefine dg alias \"%s\"\n", alias.text);
 		exit(1);
@@ -210,7 +207,7 @@ add_dg_alias(FILE* f, struct story* s, int* line){
 void
 remove_marker(FILE* f, struct parse_rundata* prd){
 	struct zstring marker = get_string(8);
-	gfss_tsc(f, &marker, "\n", &prd->line);
+	gfss_tsc(f, &marker, "\n");
 	if(prd->markers.contains(marker)){
 		// TODO: Fix memory leak
 		prd->markers.erase(marker);
@@ -221,9 +218,9 @@ remove_marker(FILE* f, struct parse_rundata* prd){
 void
 define_marker(FILE* f, struct parse_rundata* prd){
 	struct zstring change = get_string(8);
-	gfss_tsc(f, &change, ":", &prd->line);
+	gfss_tsc(f, &change, ":");
 	struct zstring marker = get_string(8);
-	gfss_tsc(f, &marker, "\n", &prd->line);
+	gfss_tsc(f, &marker, "\n");
 	prd->markers[marker] = change;
 	//TODO: Update how markers are stored so one marker
 	//		can apply multiple changes.
@@ -234,7 +231,7 @@ parse_sv_change(FILE* f, struct zstring* dg, struct data_change* dc, struct zstr
 
 	dc->dg = duplicate_string(dg);
 	dc->var = get_string(8);
-	int c = gfss_tsc(f, &dc->var, ends->text, line);
+	int c = gfss_tsc(f, &dc->var, ends->text);
 	trim_tw(&dc->var);
 
 	if( c != '\0' && NULL == strchr("><-=+", c) ){
@@ -263,7 +260,7 @@ parse_sv_changes(FILE* f, sv_changes* svc, const char* ends, int* line){
 
 		if(c == '<'){
 			clear_string(&cdg);
-			if('>' != (gfss_tsc(f, &cdg, e.text, line)) ){
+			if( '>' != ( gfss_tsc(f, &cdg, e.text) ) ){
 				fprintf(stderr, "sv changes closed while changing data group: \"%s\"\n", cdg.text);
 				exit(1);
 			}
@@ -304,7 +301,7 @@ parse_ext_grp(FILE* f, struct exit_group* eg, int* line){
 
 	struct zstring e = get_string(8);
 	while('\n' != fmove_pw_sl(f)){
-		int c = gfss_tsc(f, &e, "\n]", line);
+		int c = gfss_tsc(f, &e, "\n]");
 		if(e.len > 0){
 			eg->exits.push_back( duplicate_string(&e) );
 		}
@@ -320,7 +317,7 @@ parse_ext_grp(FILE* f, struct exit_group* eg, int* line){
 void
 parse_nexus(FILE* f, story* s, int* line){
 	struct zstring tag = get_string(8);
-	gfss_tsc(f, &tag, ":", line);
+	gfss_tsc(f, &tag, ":");
 	trim_tw(&tag);
 	if(s->tag_map.contains(tag)){
 		fprintf(stderr,
@@ -508,14 +505,14 @@ parse_option(
 
 	struct zstring base = get_string(8);
 	fmove_pw(f);
-	if( '}' == gfss_tsc(f, &base, ":}", &prd->line) ){
+	if( '}' == gfss_tsc(f, &base, ":}") ){
 		fprintf(stderr, "No destination found for option on paragraph \"%s\".\n", base.text);
 		exit(1);
 	}
 
 	fmove_pw(f);
 	struct zstring dst = get_string(8);
-	gfss_tsc(f, &dst, "}", &prd->line);
+	gfss_tsc(f, &dst, "}");
 
 	trim_tw(&base);
 	trim_tw(&dst);
@@ -563,7 +560,7 @@ parse_paragraph(
 	p->txtr_data = prd->paragraph;
 
 	struct zstring name = get_string(8);
-	gfss_tsc(f, &name, ":", &prd->line);
+	gfss_tsc(f, &name, ":");
 	trim_tw(&name);
 
 	if( '(' == fmove_pw(f) ){
@@ -626,7 +623,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 			continue;
 		case '|': {
 			struct zstring alteration = get_string(8);
-			gfss_tsc(f, &alteration, "\n", &prd.line);
+			gfss_tsc(f, &alteration, "\n");
 			update_styling(&prd, &alteration);
 			free_string(&alteration);
 			continue;
