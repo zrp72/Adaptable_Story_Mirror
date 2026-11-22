@@ -181,7 +181,7 @@ use_fint(FILE* f, int* trg, int op){
 }
 
 void
-create_data_group(FILE* f, struct story* s, int* line){
+create_data_group(FILE* f, struct story* s){
 	struct zstring name = get_string(8);
 	gfss_tsc(f, &name, "\n");
 	data_group dg;
@@ -189,7 +189,7 @@ create_data_group(FILE* f, struct story* s, int* line){
 }
 
 void
-add_dg_alias(FILE* f, struct story* s, int* line){
+add_dg_alias(FILE* f, struct story* s){
 	struct zstring dg = get_string(8);
 	if( '\n' == gfss_tsc(f, &dg, ":\n") ){
 		printf("dg alias ended at \\n before finding the alias: %s", dg.text);
@@ -246,7 +246,7 @@ parse_sv_change(FILE* f, struct zstring* dg, struct data_change* dc, struct zstr
 }
 
 int
-parse_sv_changes(FILE* f, sv_changes* svc, const char* ends, int* line){
+parse_sv_changes(FILE* f, sv_changes* svc, const char* ends){
 	int c;
 	struct zstring cdg = get_string(8);
 	struct zstring e = get_string(8);
@@ -315,7 +315,7 @@ parse_ext_grp(FILE* f, struct exit_group* eg, int* line){
 }
 
 void
-parse_nexus(FILE* f, story* s, int* line){
+parse_nexus(FILE* f, story* s){
 	struct zstring tag = get_string(8);
 	gfss_tsc(f, &tag, ":");
 	trim_tw(&tag);
@@ -333,7 +333,7 @@ parse_nexus(FILE* f, story* s, int* line){
 	int c;
 	struct exit_group eg = get_ext_grp();
 	while(']' != (c = fmove_pw(f)) && c != '\0' &&
-		']' != parse_sv_changes(f, &eg.conds, ":]", line)
+		']' != parse_sv_changes(f, &eg.conds, ":]")
 	){
 		fmove_pw(f);
 		parse_ext_grp(f, &eg, line);
@@ -519,7 +519,7 @@ parse_option(
 
 	if( '(' == fmove_pw(f) ){
 		fseek(f, 1, SEEK_CUR);
-		parse_sv_changes(f, &o->changes, ")", &prd->line);
+		parse_sv_changes(f, &o->changes, ")");
 		fmove_pw(f);
 	}
 
@@ -565,7 +565,7 @@ parse_paragraph(
 
 	if( '(' == fmove_pw(f) ){
 		fseek(f, 1, SEEK_CUR);
-		parse_sv_changes(f, &p->changes, ")", &prd->line);
+		parse_sv_changes(f, &p->changes, ")");
 		fmove_pw(f);
 	}
 
@@ -629,16 +629,16 @@ parse_story_file(const char* filepath, char* start_chapter){
 			continue;
 		}
 		case '@':
-			create_data_group(f, story, &prd.line);
+			create_data_group(f, story);
 			continue;
 		case '&':
-			add_dg_alias(f, story, &prd.line);
+			add_dg_alias(f, story);
 			continue;
 		case '[':
-			parse_nexus(f, story, &prd.line);
+			parse_nexus(f, story);
 			continue;
 		case '(':
-			parse_sv_changes(f, &option_conds, ")", &prd.line);
+			parse_sv_changes(f, &option_conds, ")");
 			continue;
 		case '{':
 			parse_option(f, story, &prd, &option_conds);
