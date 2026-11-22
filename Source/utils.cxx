@@ -53,6 +53,13 @@ tfgetc(tFILE* tf){
 	return c;
 }
 
+void(int c, tFILE* tf){
+	ungetc(c, tf->data);
+	if(c == '\n'){
+		tf->line -= 1;
+	}
+}
+
 void
 init_string(struct zstring* string, size_t cap){
 	string->len = 0;

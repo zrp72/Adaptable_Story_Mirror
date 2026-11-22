@@ -644,7 +644,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 			parse_option(f, story, &prd, &option_conds);
 			continue;
 		default:
-			ungetc(c, f);
+			tungetc(c, f);
 			parse_paragraph(f, story, &prd);
 			option_conds.clear();
 		}
