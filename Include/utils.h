@@ -20,6 +20,11 @@ void* xmalloc(size_t bytes);
 void* xcalloc(size_t amount, size_t size);
 void* xrealloc(void*, size_t new_size);
 
+struct zfile {
+	FILE* file;
+	int line;
+};
+
 struct zstring {
 	char* text;
 	size_t len;
