@@ -39,6 +39,12 @@ tfopen(char* file, char* flags){
 }
 
 void
+tfclose(tFILE* tf){
+	fclose(tf->data);
+	free(tf);
+}
+
+void
 init_string(struct zstring* string, size_t cap){
 	string->len = 0;
 	string->cap = cap;

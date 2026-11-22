@@ -26,6 +26,7 @@ struct tFILE {
 	int line;
 };
 struct tFILE* tfopen(char* file, char* flags);
+void tfclose(tFILE*);
 
 struct zstring {
 	char* text;
