@@ -161,25 +161,6 @@ finished:
 	return 1;
 }
 
-int
-use_fint(tFILE* f, int* trg, int op){
-	int a;
-	fscanf(f, "%8d", &a);
-	switch(op){
-	case '+':
-		*trg += a;
-		return tfgetc(f);
-	case '-':
-		*trg -= a;
-		return tfgetc(f);
-	case '=':
-		*trg = a;
-		return tfgetc(f);
-	}
-	fprintf(stderr, "Invalid operation type: \"%c\"\n", op);
-	exit(1);
-}
-
 void
 create_data_group(tFILE* f, struct story* s){
 	struct zstring name = get_string(8);
