@@ -33,7 +33,6 @@ struct zstring {
 		return std::strcmp(this->text, b.text) == 0;
 	}
 };
-//THIS IS PLACEHOLDER UNTIL FULL C UMAP IMPLEMENTATION
 struct string_hash {
 	size_t operator()(const struct zstring& s) const noexcept {
 		return std::hash<std::string_view>{}(s.text);
@@ -49,8 +48,6 @@ struct char_ptr_equal {
 		return std::strcmp(a, b) == 0;
 	}
 };
-///////////////////////////////////////////////////////
-#define FULL_WS 1<<0
 void init_string(struct zstring*, size_t cap);
 struct zstring get_string(size_t cap);
 void free_string(struct zstring*);
