@@ -633,7 +633,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 			option_conds.clear();
 		}
 	}
-	if(EOF == fclose(f)){
+	if(EOF == tfclose(f)){
 		fprintf(stderr, "Failed to close story file.");
 		exit(1);
 	}
