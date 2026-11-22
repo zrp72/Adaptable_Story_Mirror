@@ -40,7 +40,7 @@ tfopen(const char* file, char* flags){
 
 int
 tfclose(tFILE* tf){
-	inr r = fclose(tf->data);
+	int r = fclose(tf->data);
 	free(tf);
 	return r;
 }
