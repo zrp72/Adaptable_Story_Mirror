@@ -30,47 +30,6 @@ xrealloc(void* p, size_t new_size){
 	return n;
 }
 
-/*
-//The following functions are placeholder
-//for future custom umap implementation
-
-	int um_init(struct umap*, um_hashfunc hf){
-	
-	}
-	int um_insert(struct umap* um, 
-		void* k, void* v
-	){
-		size_t i = hf(*k);
-		umn* bkt = um->buckets[i];
-		while(bkt->next != NULL){
-			bkt = bkt->next;
-		}
-		bkt->value = v;
-	}
-
-	void um_remove(umap* um,
-		void* k,
-	){
-		*um.erase(*k);
-	}
-
-	bool um_contains(umap* um,
-		void* key,
-	){
-		if(*um.contains(*key)){
-			return true;
-		}
-		return false;
-	}
-
-	size_t string_hash(void*){}
-	size_t char_hash(void*){}
-	size_t int_hash(void*){}
-	size_t bool_hash(void*){}//Just in case
-////////////////////////////////////////////
-////////////////////////////////////////////
-*/
-
 void
 init_string(struct zstring* string, size_t cap){
 	string->len = 0;
