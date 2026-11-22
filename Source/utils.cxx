@@ -44,6 +44,15 @@ tfclose(tFILE* tf){
 	free(tf);
 }
 
+int
+tfgetc(tFILE* tf){
+	int c = fgetc(tf->data);
+	if(c == '\n'){
+		tf->line += 1;
+	}
+	return c;
+}
+
 void
 init_string(struct zstring* string, size_t cap){
 	string->len = 0;

@@ -27,6 +27,7 @@ struct tFILE {
 };
 struct tFILE* tfopen(char* file, char* flags);
 void tfclose(tFILE*);
+int tfgetc(tFILE*);
 
 struct zstring {
 	char* text;
