@@ -21,5 +21,6 @@ COPY Include/* ${dest}/Include
 WORKDIR ${dest}
 
 RUN make CXXFLAGS=-std=c++20 CPPFLAGS=-IInclude 2>&1
+COPY Source/READ_DIRECTIONS ${dest}/Source
 
 CMD ["/src/Adaptable_Story_Mirror/ASM"]
