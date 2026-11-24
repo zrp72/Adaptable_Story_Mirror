@@ -1,6 +1,38 @@
 #include "story_parser.h"
 #include "utils.h"
 
+int
+list_contains_c(const char* list, char c){
+	for(int i = 0; list[i] != '\0'; i++){
+		if(c == list[i]){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int
+match_key(
+	char c,
+	char* key,
+	int pos
+){
+	if(c == key[pos]){
+		if(key[pos+1] == '\0'){
+			return 1;
+		}
+		return 0;
+
+	} else if(isspace(c) && (key[pos-1] == '\n')){
+		//NOTE: All whitespace after a newline WILL be trimmed.
+		return 0;
+
+	} else if(pos > 0){
+		return -1;
+	}
+	return -2;
+}
+
 //File move past char
 //Returns false on EOF
 bool
@@ -44,16 +76,6 @@ fmove_pw_sl(tFILE* f){
 int
 		}
 	}
-}
-
-int
-list_contains_c(const char* list, char c){
-	for(int i = 0; list[i] != '\0'; i++){
-		if(c == list[i]){
-			return 1;
-		}
-	}
-	return 0;
 }
 
 int
