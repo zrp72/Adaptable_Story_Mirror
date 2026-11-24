@@ -82,6 +82,7 @@ ffind_c(tFILE* f, const char* ends){
 			return c;
 		}
 	}
+	return EOF;
 }
 
 int
