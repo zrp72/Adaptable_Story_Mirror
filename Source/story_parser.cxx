@@ -207,14 +207,42 @@ set_cdg(zstring* cdg, tFILE* f, zstring* e){
 	trim_tw(cdg);
 }
 
+bool
+check_default(tFILE* f){
+	fmove_pw(f);
+	const char* d = "default";	
+	char buffer[8] = {0};
+	int i = 0;
+	while( (buffer[i] = tfgetc(f)) == d[i] ){
+		i += 1;
+	}
+
+	if(0 == strncmp(d, buffer, 7)){
+		return true;
+	} else {
+		while(i >= 0){
+			tungetc(buffer[i--], f);
+		}
+		return false;
+	}
+}
+
 int
 parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
+	
 	int c;
-	struct zstring cdg = get_string(8);
+	if(check_default(f)){
+		c = ffind_c(f, ends);
+		(void)tfgetc(f);
+		goto no_changes;
+	}
+
+	{
 	struct zstring e = get_string(8);
 	dynamic_mappend(&e, "><-=+");
 	dynamic_mappend(&e, ends);
 
+	struct zstring cdg = get_string(8);
 	while( EOF != (c = fmove_pw(f)) ){
 		if( list_contains_c(ends, c) ){
 			break;
@@ -222,6 +250,7 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 
 		if(c == '<'){
 			(void)tfgetc(f);
+			set_cdg(&cdg, f, &e);
 		} else if(cdg.len == 0) {
 			printf("(LINE %d)Active data group not declared during sv parse.", f->line);
 			exit(1);
@@ -237,6 +266,9 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 		printf("(LINE %d)No story variables found to parse.", f->line);
 	}
 	free_string(&cdg);
+	}
+
+no_changes:
 	return c;
 }
 
