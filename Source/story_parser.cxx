@@ -258,6 +258,7 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 		} else {
 			struct data_change dc;
 			parse_sv_change(f, &cdg, &dc, &e);
+			svc->push_back(dc);
 		}
 	}
 	if(svc->empty()){

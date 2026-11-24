@@ -67,6 +67,7 @@ Main Stat:
 	Default:
 	Strength
 ]
+
 [select_dex:
 	<st> all = 2:
 	roll_home
