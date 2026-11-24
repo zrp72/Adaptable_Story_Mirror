@@ -585,8 +585,6 @@ parse_story_file(const char* filepath, char* start_chapter){
 	}
 
 	struct story* story = new struct story();
-	story->location = get_string(4);
-	dynamic_mappend(&story->location, start_chapter);
 
 	struct parse_rundata prd;
 	sv_changes option_conds;
@@ -638,6 +636,13 @@ parse_story_file(const char* filepath, char* start_chapter){
 		fprintf(stderr, "Failed to close story file.");
 		exit(1);
 	}
+
+	story->location = get_string(4);
+	dynamic_mappend(&story->location, start_chapter);
+	if(!story->tag_map.contains(story->location)){
+		fprintf(stderr, "Story start index \"%s\" does not exist", start_chapter);
+		exit(1);
+	}	
 	return story;
 }
 
