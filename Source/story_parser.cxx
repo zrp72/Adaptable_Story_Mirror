@@ -101,48 +101,6 @@ gfss_tsc(tFILE* f, struct zstring* string, const char* end){
 	return c;
 }
 
-//Get file substring to multi char
-//Char* end is treated as a key
-//NOTES:
-//Returns EOF if end on EOF
-//Returns 1 if the key was found
-//Places the file iterator
-//	past the end character
-//Trims trailing whitespace
-//	if string is the last
-//	char read is \n
-int
-gfss_tmc(tFILE* f, struct zstring* string, char* end){
-
-	int ki = 0;
-	int c;
-	while(EOF != (c = tfgetc(f))){
-		int s = match_key(c, end, ki);
-		switch(s){
-		case -2://todo: is this even needed?
-			break;
-		case -1:
-			dynamic_sappend(string, end, 0, ki);
-			ki = 0;
-			break;
-		case 0:
-			ki += 1;
-			continue;
-		case 1:
-			goto finished;
-		}
-
-		dynamic_append(string, c);
-	}
-finished:
-	if(c == '\n'){
-		trim_tw(string);
-	} else if(c == EOF) {
-		return EOF;
-	}
-	return 1;
-}
-
 void
 create_data_group(tFILE* f, struct story* s){
 	struct zstring name = get_string(8);
