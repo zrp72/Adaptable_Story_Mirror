@@ -1,12 +1,6 @@
 
 .PHONY: clean all
 
-ifeq ($(OS),Windows_NT)
-	HOME_DIR ?= $(USERPROFILE)
-else
-	HOME_DIR ?= $(HOME)
-endif
-
 obj_files = \
 	Source/main.o \
 	Source/instruction_loader.o \
@@ -20,9 +14,9 @@ obj_files = \
 CXXFLAGS = -std=c++20
 CPPFLAGS = \
 	-IInclude \
-	-I$(HOME_DIR)\Documents\SDKs\SDL\x86_64-w64-mingw32\include \
-	-I$(HOME_DIR)\Documents\SDKs\SDL_image\x86_64-w64-mingw32\include \
-	-I$(HOME_DIR)\Documents\SDKs\SDL_ttf\x86_64-w64-mingw32\include
+	-IC:\Users\purse\Documents\SDKs\SDL\x86_64-w64-mingw32\include \
+	-IC:\Users\purse\Documents\SDKs\SDL_image\x86_64-w64-mingw32\include \
+	-IC:\Users\purse\Documents\SDKs\SDL_ttf\x86_64-w64-mingw32\include
 
 LDLIBS = -lSDL3 -lSDL3_image -lSDL3_ttf
 
