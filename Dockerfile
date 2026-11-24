@@ -7,6 +7,7 @@ RUN aptitude install -y make
 RUN aptitude install -y g++
 RUN aptitude install -y libsdl3-dev
 RUN aptitude install -y libsdl3-image-dev libsdl3-ttf-dev
+RUN aptitude install -y gdb vim less
 
 
 ARG dest=/src/Adaptable_Story_Mirror
