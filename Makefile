@@ -2,9 +2,9 @@
 .PHONY: clean all
 
 ifeq ($(OS),Windows_NT)
-    HOME_DIR ?= $(USERPROFILE)
+	HOME_DIR ?= $(USERPROFILE)
 else
-    HOME_DIR ?= $(HOME)
+	HOME_DIR ?= $(HOME)
 endif
 
 obj_files = \
