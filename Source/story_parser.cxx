@@ -434,14 +434,16 @@ update_styling(struct parse_rundata* s, struct zstring* change){
 int
 fread_glyphtext(
 	tFILE* f,
-	vector<glyph>* cntr, struct parse_rundata* s,
+	vector<glyph>* cntr, struct parse_rundata s,
 	const char* ends
 ){
+	//ALWAYS PLACE DOUBLE NEWLINE AT THE BEGINNING OF THE ENDS PARAMETER
 	bool dnt = false;
 	if( 0 == strncmp(ends, "\n\n", 2) ){
 		dnt = true;
 		ends += 2;
 	}
+
 	int c;
 	struct zstring cache = get_string(8);
 	while( EOF != (c = tfgetc(f))){
@@ -454,7 +456,7 @@ fread_glyphtext(
 			break;
 		}
 		dynamic_append(&cache, c);
-		for(auto& [marker, change] : s->markers){
+		for(auto& [marker, change] : s.markers){
 			int i = 0;
 			for( int rv = 0; -1 != (rv = match_key(
 					cache.text[cache.len - marker.len + i],
@@ -464,9 +466,9 @@ fread_glyphtext(
 				if(rv == 1){
 					cntr->resize(cntr->size() - marker.len);
 					if( 0 != strncmp(change.text, "nwln", 4) ){
-						update_styling(s, &change);
+						update_styling(&s, &change);
 					} else {
-						cntr->push_back(glyph('\n', s->glyph));
+						cntr->push_back(glyph('\n', s.glyph));
 					}
 					break;
 				}
@@ -474,7 +476,7 @@ fread_glyphtext(
 		}
 		glyph g;
 		g.unicode = c;
-		g.style = s->glyph;
+		g.style = s.glyph;
 		cntr->push_back(g);
 	}
 	return c;
@@ -515,7 +517,7 @@ parse_option(
 		fmove_pw(f);
 	}
 
-	fread_glyphtext(f, &o->prompt, prd, "\n");
+	fread_glyphtext(f, &o->prompt, *prd, "\n");
 	s->used_glyphs.insert(s->used_glyphs.end(),
 		o->prompt.begin(), o->prompt.end()
 	);
@@ -561,7 +563,7 @@ parse_paragraph(
 		fmove_pw(f);
 	}
 
-	fread_glyphtext(f, &p->text, prd, "\n\n");
+	fread_glyphtext(f, &p->text, *prd, "\n\n");
 	s->used_glyphs.insert(s->used_glyphs.end(),
 		p->text.begin(), p->text.end()
 	);

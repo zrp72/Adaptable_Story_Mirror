@@ -70,6 +70,7 @@ struct nexus {
 
 struct story {
 	std::unordered_map<struct zstring, void*, string_hash> tag_map;
+	//TODO: Change used_glyphs to a umap
 	vector<glyph> used_glyphs;
 	struct zstring location;
 	story_vars data_groups;
