@@ -74,6 +74,12 @@ fmove_pw_sl(tFILE* f){
 }
 
 int
+ffind_c(tFILE* f, const char* ends){
+	int c;
+	while( EOF != (c = tfgetc(f)) ){
+		if(list_contains_c(ends, c)){
+			tungetc(c, f);
+			return c;
 		}
 	}
 }
