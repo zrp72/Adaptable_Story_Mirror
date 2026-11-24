@@ -41,27 +41,9 @@ fmove_pw_sl(tFILE* f){
 	return EOF;
 }
 
-//Match key iteratively
 int
-match_key(
-	char c,
-	char* key,
-	int pos
-){
-	if(c == key[pos]){
-		if(key[pos+1] == '\0'){
-			return 1;
 		}
-		return 0;
-
-	} else if(isspace(c) && (key[pos-1] == '\n')){
-		//NOTE: All whitespace after a newline WILL be trimmed.
-		return 0;
-
-	} else if(pos > 0){
-		return -1;
 	}
-	return -2;
 }
 
 int
