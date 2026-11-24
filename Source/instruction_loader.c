@@ -67,5 +67,12 @@ load_ral(const char* filename, struct RAL* config){
 			*d++ = (char)c;
 		}
 	}
+	if( config->story_file[0]		== '\0'	||
+		config->start_chapter[0]	== '\0'	||
+		config->asset_folder[0]		== '\0'
+	  ){
+		fprintf(stderr, "1 or more RAL fields were left empty");
+		exit(1);
+	}
 }
 
