@@ -243,6 +243,7 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 		}
 
 		if(c == '<'){
+			(void)tfgetc(f);
 			clear_string(&cdg);
 			if( '>' != ( gfss_tsc(f, &cdg, e.text) ) ){
 				fprintf(stderr, "(LINE %d)sv changes closed while changing data group: \"%s\"\n", f->line, cdg.text);
