@@ -51,7 +51,10 @@ tfgetc(tFILE* tf){
 	if(c == '\n'){
 		tf->line += 1;
 	}
-	return c;
+	//Note: tolower is for this project specifically, 
+	//as with how tfgetc is used, this allows for the 
+	//story file to easily be case insensitive
+	return tolower(c);
 }
 
 void
