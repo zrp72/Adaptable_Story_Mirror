@@ -30,10 +30,10 @@ LDLIBS = -lSDL3 -lSDL3_image -lSDL3_ttf
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -std=c++20 -c $< -o $@
 
 ASM: $(obj_files)
-	$(CXX) $^ -o ASM $(LDLIBS) -LInclude 
+	$(CXX) $(CXXFLAGS) $^ -o ASM $(LDLIBS) -LInclude 
 
 clean:
-	rm -f *.o
+	rm -f Source/*.o ASM
 
 image:
 	docker build -t adaptable-story-mirror .
