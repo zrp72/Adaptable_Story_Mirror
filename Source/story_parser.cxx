@@ -197,6 +197,16 @@ parse_sv_change(tFILE* f, struct zstring* dg, struct data_change* dc, struct zst
 
 }
 
+void
+set_cdg(zstring* cdg, tFILE* f, zstring* e){
+	clear_string(cdg);
+	if( '>' != ( gfss_tsc(f, cdg, e->text) ) ){
+		fprintf(stderr, "(LINE %d)sv changes closed while changing data group: \"%s\"\n", f->line, cdg->text);
+		exit(1);
+	}
+	trim_tw(cdg);
+}
+
 int
 parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 	int c;
@@ -212,12 +222,6 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 
 		if(c == '<'){
 			(void)tfgetc(f);
-			clear_string(&cdg);
-			if( '>' != ( gfss_tsc(f, &cdg, e.text) ) ){
-				fprintf(stderr, "(LINE %d)sv changes closed while changing data group: \"%s\"\n", f->line, cdg.text);
-				exit(1);
-			}
-			trim_tw(&cdg);
 		} else if(cdg.len == 0) {
 			printf("(LINE %d)Active data group not declared during sv parse.", f->line);
 			exit(1);
