@@ -1,5 +1,5 @@
 
-FROM debian
+FROM debian@sha256:3cda3ca472ce45507a5109c6a3907093e24d9ae67d55954c9a07a45665dafba2
 
 RUN apt-get update
 RUN apt-get -y install aptitude
@@ -7,6 +7,7 @@ RUN aptitude install -y make
 RUN aptitude install -y g++
 RUN aptitude install -y libsdl3-dev
 RUN aptitude install -y libsdl3-image-dev libsdl3-ttf-dev
+RUN aptitude install -y gdb vim less
 
 
 ARG dest=/src/Adaptable_Story_Mirror
@@ -21,5 +22,6 @@ COPY Include/* ${dest}/Include
 WORKDIR ${dest}
 
 RUN make CXXFLAGS=-std=c++20 CPPFLAGS=-IInclude 2>&1
+COPY Source/READ_DIRECTIONS ${dest}/Source
 
 CMD ["/src/Adaptable_Story_Mirror/ASM"]
