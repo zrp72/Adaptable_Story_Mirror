@@ -54,6 +54,7 @@ load_ral(const char* filename, struct RAL* config){
 			if(c == '"'){
 				*d = 0;
 				d = buffer;
+				dz = d;
 				rs = 1;
 				continue;
 			}
