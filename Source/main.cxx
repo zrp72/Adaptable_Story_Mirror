@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 
 		struct story* story = parse_story_file(config.story_file, config.start_chapter);
 
-		gui_core gui;
+		gui_core gui{};
 		assets assets(gui, config.asset_folder);
 		assets.glyphs = rasterize_glyph_atlas(std::filesystem::path("ttf_files"), 
 			story->used_glyphs, gui.renderer, assets.textures, "glyph_atlas", 1024, 1024);

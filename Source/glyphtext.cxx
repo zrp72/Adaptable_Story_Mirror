@@ -179,7 +179,7 @@ rasterize_glyph_atlas(std::filesystem::path directory, std::vector<glyph>& glyph
 			continue;
 		}
 
-		rasterized_glyph rg;
+		rasterized_glyph rg{};
 		TTF_GetGlyphMetrics(font, glyph.unicode,
 			&rg.min_x,
 			&rg.max_x,
