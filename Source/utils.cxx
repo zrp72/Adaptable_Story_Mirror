@@ -34,6 +34,10 @@ struct tFILE*
 tfopen(const char* file, const char* flags){
 	struct tFILE* tf = (struct tFILE*)xmalloc(sizeof *tf);
 	tf->data = fopen(file, flags);
+	if(tf->data == NULL){
+		perror(file);
+		exit(1);
+	}
 	tf->line = 1;
 	return tf;
 }

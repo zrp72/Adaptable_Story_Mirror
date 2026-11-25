@@ -589,7 +589,7 @@ struct story*
 parse_story_file(const char* filepath, char* start_chapter){
 	tFILE* f = tfopen(filepath, "r");
 	if(f == NULL){
-		perror(filepath);
+		fprintf("Failed to create tFILE*");
 		exit(1);
 	}
 
