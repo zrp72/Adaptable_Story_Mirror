@@ -588,10 +588,6 @@ free_prg(struct paragraph* p){
 struct story*
 parse_story_file(const char* filepath, char* start_chapter){
 	tFILE* f = tfopen(filepath, "r");
-	if(f == NULL){
-		fprintf(stderr, "Failed to create tFILE*");
-		exit(1);
-	}
 
 	struct story* story = new struct story();
 
