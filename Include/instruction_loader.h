@@ -1,6 +1,8 @@
 #ifndef inst_load_header
 #define inst_load_header 1
 
+#include <ctype.h>
+
 struct RAL /* Runtime Access Locations */
 {
 	char story_file[64];

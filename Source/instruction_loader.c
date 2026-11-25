@@ -27,13 +27,13 @@ load_ral(const char* filename, struct RAL* config){
 		case 1:
 			if(c == ':'){
 				*d = 0;
-				if(strncmp(buffer, "STORY_FILE", 10) == 0){
+				if(strncmp(buffer, "story_file", 10) == 0){
 					d = config->story_file;
 
-				} else if(strncmp(buffer, "START_CHAPTER", 13) == 0){
+				} else if(strncmp(buffer, "start_chapter", 13) == 0){
 					d = config->start_chapter;
 
-				} else if(strncmp(buffer, "ASSET_FOLDER", 12) == 0) {
+				} else if(strncmp(buffer, "asset_folder", 12) == 0) {
 					d = config->asset_folder;
 
 				} else {
@@ -65,7 +65,7 @@ load_ral(const char* filename, struct RAL* config){
 			fprintf(stderr, "Config file has either an invalid RAL name or a filename that exceeds the buffer size.");
 			exit(1);
 		} else {
-			*d++ = (char)c;
+			*d++ = tolower((char)c);
 		}
 	}
 	if( config->story_file[0]		== '\0'	||
