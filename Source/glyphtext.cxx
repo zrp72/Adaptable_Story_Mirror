@@ -456,10 +456,7 @@ glyphtext::refresh_layout(std::unordered_map<glyph, rasterized_glyph, glyph_hash
 
 		}else if(alignment == GLYPHTEXT_ALIGN_JUSTIFY){
 
-			if(spaces == 0){
-				layout_line(line, default_space);
-			}else if(last_line){
-				pen_x = (w - (line.length + (spaces * default_space))) / 2;
+			if(spaces == 0 || last_line){
 				layout_line(line, default_space);
 			}else{
 				int spacing = (w - line.length) / spaces;
