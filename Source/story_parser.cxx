@@ -246,6 +246,7 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 	struct zstring cdg = get_string(8);
 	while( EOF != (c = fmove_pw(f)) ){
 		if( list_contains_c(ends, c) ){
+			(void)tfgetc(f);
 			break;
 		}
 
