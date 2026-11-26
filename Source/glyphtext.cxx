@@ -66,6 +66,7 @@ std::pair<int, int>
 packing_grid::find_space(int w, int h, int padding){
 	while(this->x + w + padding < this->width){
 		while(this->y + h + padding < this->height){
+			//debug("Checking availability of pixel (" << x << ',' << y << ")\n");
 			if( pixels.at(x).at(y) ){
 				y += 1;
 				continue;
@@ -78,6 +79,7 @@ packing_grid::find_space(int w, int h, int padding){
 			bool collision = false;
 			int py = 1;
 			while( py < h + padding ){
+				//debug("Checking viability of point (" << x << ',' << y << ") at py (" << py << ")\n");
 				collision = pixels.at(x).at(y + py);
 				if(collision){ break; }
 				py += 1;
