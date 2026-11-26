@@ -56,5 +56,20 @@
 Start: You awake in a room adorned with swords hanging from the walls.
 
 {Start:Window} Look out the window
+{Start:Wheel of Dreams}(<st> str + 5) Close your eyes
+{Start:Wheel of Dreams} Wait
 
 Window: The sky is painted a violet purple.
+
+[Wheel of Dreams:
+    <st> str = 5:
+    Giants_dream
+
+    Default:
+    Drift_to_sleep
+
+]
+
+Giants_dream: You stand on the precipice of a cliff, overlooking the lands of Avran.
+
+Drift_to_sleep: Color gives way to blanketing darkness as you fall back to the realm of dusk.
