@@ -100,3 +100,4 @@ launch_game(struct story& data, assets& assets, gui_core& gui){
 
 	return 0;
 }
+

@@ -34,3 +34,4 @@ image:
 
 run:
 	docker run adaptable-story-mirror
+

@@ -9,3 +9,4 @@ int progress_story(struct story&, assets&, gui_core&, int choice);
 bool compare_sv(int, int, int);
 
 #endif
+

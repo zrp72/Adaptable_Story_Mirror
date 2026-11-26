@@ -76,3 +76,4 @@ void move_iterator_past_whitespace(std::string&, int&);
 std::string open_txt_file(std::filesystem::path);
 
 #endif
+

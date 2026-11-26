@@ -314,3 +314,4 @@ create_UI_elements(gui_core& gui, assets& assets, struct story& story){
 
 	return 0;
 }
+

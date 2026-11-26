@@ -128,3 +128,4 @@ rasterize_glyph_atlas(std::filesystem::path, std::vector<glyph>&,
 	SDL_Renderer*, std::unordered_map<std::string, SDL_Texture*>&, std::string, int, int);
 
 #endif
+

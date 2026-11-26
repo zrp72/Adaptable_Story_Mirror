@@ -181,3 +181,4 @@ open_txt_file(std::filesystem::path path){
 	read_file << file.rdbuf();
 	return read_file.str();
 }
+

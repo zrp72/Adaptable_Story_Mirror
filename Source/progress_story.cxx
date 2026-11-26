@@ -156,3 +156,4 @@ progress_story(struct story &story, assets& main_assets, gui_core& gui, int choi
 	}
 	return 0;
 }
+

@@ -469,3 +469,4 @@ glyphtext::refresh_layout(std::unordered_map<glyph, rasterized_glyph, glyph_hash
 
 	this->height = lowest_point;
 }
+

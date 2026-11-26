@@ -12,3 +12,4 @@ struct RAL /* Runtime Access Locations */
 void load_ral(const char* filename, struct RAL*);
 
 #endif
+
