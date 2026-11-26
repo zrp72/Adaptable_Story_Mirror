@@ -652,6 +652,7 @@ parse_story_file(const char* filepath, char* start_chapter){
 		fprintf(stderr, "Failed to close story file.");
 		exit(1);
 	}
+	//TODO: Fix memory leak with dg_aliases and markers
 
 	story->location = get_string(4);
 	dynamic_mappend(&story->location, start_chapter);
