@@ -115,10 +115,9 @@ class packing_grid {
 	//If no position is found, the returned point will be -1, -1
 	std::pair<int, int> find_space(int, int, int);
 
-	//Takes the x, y, width, and height of the space being used.
+	//Takes the x, y, width, height, and padding of the space being used.
 	//Will return false if given area goes beyond pixel grid bounds.
-	//Will print a debug if it attempts to use a pixel already used.
-	bool use_pixels(int, int, int, int);
+	bool use_pixels(int, int, int, int, int);
 };
 
 std::unordered_map<glyph, rasterized_glyph, glyph_hash>

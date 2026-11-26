@@ -101,14 +101,16 @@ std::pair<int, int> packing_grid::find_space(int w, int h, int padding){
 	return {-1, -1};
 }
 
-//Takes the x, y, width, and height of the space being used.
+//Takes the x, y, width, height, and padding of the space being used.
 //Will return false if given area goes beyond pixel grid bounds.
-//Will print a debug if it attempts to use a pixel already used.
-bool packing_grid::use_pixels(int x, int y, int w, int h){
-	for(int px = 0; px < w; ++px){
-		if(x + px >= width){return false;}
-		for(int py = 0; py < h; ++py){
-			if(y + py >= height){return false;}
+bool packing_grid::use_pixels(int x, int y, int w, int h, int padding){
+	if( (x - padding/2) < 0 || (y - padding/2) < 0 ){
+		return false;
+	}
+	for(int px = 0 - padding/2; px < w + padding; px++){
+		if( x + px + padding >= width ){ return false; }
+		for(int py = 0 - padding/2; py < h + padding; py++){
+			if( y + py + padding >= height ){ return false; }
 			pixels.at(x + px).at(y + py) = true;
 		}
 	}
@@ -226,7 +228,7 @@ rasterize_glyph_atlas(std::filesystem::path directory, std::vector<glyph>& glyph
 				continue;
 			}
 		}
-		if(!packing_container.use_pixels(dst.first, dst.second, g->w, g->h)){
+		if(!packing_container.use_pixels(dst.first, dst.second, g->w, g->h, 2)){
 			debug("Attempted to pack glyph outside pixel bounds.");
 		}
 		SDL_Rect dstrect(dst.first, dst.second, g->w, g->h);
