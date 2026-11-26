@@ -63,34 +63,38 @@ packing_grid::packing_grid(size_t w, size_t h):width(w), height(h){
 //Padding should always be an even number.
 //If no position is found, the returned point will be -1, -1
 std::pair<int, int> packing_grid::find_space(int w, int h, int padding){
-	for(int x = 0; x < width; ++x){
-		for(int y = 0; y < height; ++y){
+	//TODO: fix, current complexity of this function is something like O(n^2), but it works
+	//Dont enable debugs
+	for(int x = 0; x < width; x++){
+		for(int y = 0; y < height; y++){
+			//debug("Checking for space at point (" << x << ',' << y << ")\n");
 			if(pixels.at(x).at(y)){
 				continue;
-			}else{
-				bool viable = true;
-				for(int px = 0; px < w + padding && x + px < width; ++px){
-					if(x + px >= width){
+			}
+
+			bool viable = true;
+			for(int px = 0; px < (w + padding); px++){
+				if(x + px > width - 1){
+					viable = false;
+					break;
+				}
+				for(int py = 0; py < (h + padding); py++){
+					//debug("Checking viability of point (" << x << ',' << y << ") at pen (" << px << ',' << py << ")\n");
+					if(y + py > height - 1){
 						viable = false;
 						break;
 					}
-					for(int py = 0; py < h + padding; ++py){
-						if(pixels.at(x + px).at(y + py)){
-							viable = false;
-							break;
-						}
-						if(y + py >= height){
-							viable = false;
-							break;
-						}
-					}
-					if(!viable){
+					if(pixels.at(x + px).at(y + py)){
+						viable = false;
 						break;
 					}
 				}
-				if(viable){
-					return {x + (padding / 2), y + (padding / 2)};
+				if(!viable){
+					break;
 				}
+			}
+			if(viable){
+				return {x + (padding / 2), y + (padding / 2)};
 			}
 		}
 	}
@@ -141,7 +145,10 @@ rasterize_glyph_atlas(std::filesystem::path directory, std::vector<glyph>& glyph
 
 	packing_grid packing_container(atlas_w, atlas_h);
 	SDL_Surface* atlas = SDL_CreateSurface(atlas_w, atlas_h, SDL_PIXELFORMAT_RGBA8888);
+
+	int glyph_index = 1; //debug variable
 	for(auto& glyph : glyphs){
+		debug("Printing glyph " << glyph_index++ << ", \"" << (char)glyph.unicode << "\" ");
 
 		if(!cached_fonts.contains(glyph.style.font)){
 			std::filesystem::path path(glyph.style.font);
@@ -229,7 +236,12 @@ rasterize_glyph_atlas(std::filesystem::path directory, std::vector<glyph>& glyph
 		rg.atlas_tag = atlas_tag;
 		rg.unicode = glyph.unicode;
 
-		rasterized_glyphs.emplace(glyph, rg);
+		if(!rasterized_glyphs.contains(glyph)){
+			rasterized_glyphs.emplace(glyph, rg);
+			debug("(Succesfully rasterized)\n");
+		} else {
+			debug("(Already rasterized)\n");
+		}
 	}
 	SDL_Texture* a = SDL_CreateTextureFromSurface(renderer, atlas);
 	container.emplace(atlas_tag, a);
