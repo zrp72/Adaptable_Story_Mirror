@@ -527,9 +527,10 @@ parse_option(
 	if( !s->tag_map.contains(base) ){
 		fprintf(stderr, "Attempted to attach option to undeclared paragraph: \"%s\"\n", base.text);
 		exit(1);
-	} else if (s->tag_map[base]->t != PRG) {
+	} /* else if (s->tag_map[base]->t != PRG) {
 		fprintf(stderr, "Attempted to attach option to something other than a paragraph: \"%s\"\n", base.text);
-	}
+	} 
+	Temporarily commented out due to c++ compilation rules*/
 
 	struct paragraph* p = (struct paragraph*)s->tag_map[base];
 	p->options.push_back(o);
