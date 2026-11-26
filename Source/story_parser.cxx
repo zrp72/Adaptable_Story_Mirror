@@ -524,15 +524,15 @@ parse_option(
 		o->prompt.glyphs.begin(), o->prompt.glyphs.end()
 	);
 
-	if( s->tag_map.contains(base) ){
-		struct paragraph* p = (struct paragraph*)s->tag_map[base];
-		if(p->t == PRG){
-			p->options.push_back(o);
-			return;
-		}
+	if( !s->tag_map.contains(base) ){
+		fprintf(stderr, "Attempted to attach option to undeclared paragraph: \"%s\"\n", base.text);
+		exit(1);
+	} else if (s->tag_map[base]->t != PRG) {
+		fprintf(stderr, "Attempted to attach option to something other than a paragraph: \"%s\"\n", base.text);
 	}
-	fprintf(stderr, "Attempted to attach option to undeclared paragraph: \"%s\"\n", base.text);
-	exit(1);
+
+	struct paragraph* p = (struct paragraph*)s->tag_map[base];
+	p->options.push_back(o);
 }
 
 void
