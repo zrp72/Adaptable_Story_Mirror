@@ -273,13 +273,13 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 		element.text.push_back(relative_text(
 			prompt,
 			mask,
-			relative_rect(x_pos, y_pos, .3)
+			relative_rect(x_pos, y_pos, column_w)
 		));
 
 		element.texture.push_back(relative_texture(
 			border,
 			srcrect,
-			relative_rect(x_pos -.05, y_pos, .4, .05),
+			relative_rect(x_pos -.05, y_pos, .4, column_h),
 			[=](struct story& data, assets& assets, gui_core& gui){
 				progress_story(data, assets, gui, iteration);
 			}
