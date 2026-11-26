@@ -79,7 +79,7 @@ apply_changes(struct story &story, sv_changes& changes){
 	auto& data = story.data_groups;
 	for(const auto& c : changes){
 		if(!data.contains(c.dg)){
-			fprintf(stderr, "Attempted to alter nonexistent data group: %s", c.dg.text);
+			fprintf(stderr, "Attempted to alter nonexistent data group \"%s\"\n", c.dg.text);
 			exit(1);
 		}
 		if(!story.data_groups[c.dg].contains(c.var)){
