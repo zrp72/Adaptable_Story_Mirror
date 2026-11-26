@@ -54,3 +54,7 @@
 &stats:st
 
 Start: You awake in a room adorned with swords hanging from the walls.
+
+{Start:Window} Look out the window
+
+Window: The sky is painted a violet purple.
