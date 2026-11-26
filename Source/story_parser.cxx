@@ -139,7 +139,7 @@ create_data_group(tFILE* f, struct story* s){
 }
 
 void
-add_dg_alias(tFILE* f, struct story* s){
+add_dg_alias(tFILE* f, parse_rundata* prd){
 	struct zstring dg = get_string(8);
 	if( '\n' == gfss_tsc(f, &dg, ":\n") ){
 		printf("dg alias ended at \\n before finding the alias: %s", dg.text);
@@ -147,11 +147,11 @@ add_dg_alias(tFILE* f, struct story* s){
 	}
 	struct zstring alias = get_string(8);
 	gfss_tsc(f, &alias, "\n");
-	if( s->dg_aliases.contains(alias) ){
+	if( prd->dg_aliases.contains(alias) ){
 		fprintf(stderr, "Attempted to redefine dg alias \"%s\"\n", alias.text);
 		exit(1);
 	}
-	s->dg_aliases[alias] = dg;
+	prd->dg_aliases[alias] = dg;
 }
 
 void
@@ -199,13 +199,18 @@ parse_sv_change(tFILE* f, struct zstring* dg, struct data_change* dc, struct zst
 }
 
 void
-set_cdg(zstring* cdg, tFILE* f, zstring* e){
+set_cdg(zstring* cdg, tFILE* f, parse_rundata* prd, zstring* e){
 	clear_string(cdg);
 	if( '>' != ( gfss_tsc(f, cdg, e->text) ) ){
 		fprintf(stderr, "(LINE %d)sv changes closed while changing data group: \"%s\"\n", f->line, cdg->text);
 		exit(1);
 	}
 	trim_tw(cdg);
+	if(prd->dg_aliases.contains(*cdg)){
+		struct zstring dg = prd->dg_aliases[*cdg];
+		clear_string(cdg);
+		dynamic_mappend(cdg, dg.text);
+	}
 }
 
 bool
@@ -229,7 +234,7 @@ check_default(tFILE* f){
 }
 
 int
-parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
+parse_sv_changes(tFILE* f, parse_rundata* prd, sv_changes* svc, const char* ends){
 	
 	int c;
 	if(check_default(f)){
@@ -252,7 +257,7 @@ parse_sv_changes(tFILE* f, sv_changes* svc, const char* ends){
 
 		if(c == '<'){
 			(void)tfgetc(f);
-			set_cdg(&cdg, f, &e);
+			set_cdg(&cdg, f, prd, &e);
 		} else if(cdg.len == 0) {
 			printf("(LINE %d)Active data group not declared during sv parse.", f->line);
 			exit(1);
@@ -296,7 +301,8 @@ parse_ext_grp(tFILE* f, struct exit_group* eg){
 	while('\n' != fmove_pw_sl(f)){
 		int c = gfss_tsc(f, &e, "\n]");
 		if(e.len > 0){
-			eg->exits.push_back( duplicate_string(&e) );
+			struct zstring exit = duplicate_string(&e);
+			eg->exits.push_back(exit);
 		}
 		if(c == ']'){
 			tungetc(c, f);
@@ -308,7 +314,7 @@ parse_ext_grp(tFILE* f, struct exit_group* eg){
 }
 
 void
-parse_nexus(tFILE* f, story* s){
+parse_nexus(tFILE* f, parse_rundata* prd, story* s){
 	struct zstring tag = get_string(8);
 	gfss_tsc(f, &tag, ":");
 	trim_tw(&tag);
@@ -326,7 +332,7 @@ parse_nexus(tFILE* f, story* s){
 	int c;
 	struct exit_group eg = get_ext_grp();
 	while(']' != (c = fmove_pw(f)) && c != '\0' &&
-		']' != parse_sv_changes(f, &eg.conds, ":]")
+		']' != parse_sv_changes(f, prd, &eg.conds, ":]")
 	){
 		fmove_pw(f);
 		parse_ext_grp(f, &eg);
@@ -513,7 +519,7 @@ parse_option(
 
 	if( '(' == fmove_pw(f) ){
 		(void)tfgetc(f);
-		parse_sv_changes(f, &o->changes, ")");
+		parse_sv_changes(f, prd, &o->changes, ")");
 		fmove_pw(f);
 	}
 
@@ -562,7 +568,7 @@ parse_paragraph(
 
 	if( '(' == fmove_pw(f) ){
 		(void)tfgetc(f);
-		parse_sv_changes(f, &p->changes, ")");
+		parse_sv_changes(f, prd, &p->changes, ")");
 		fmove_pw(f);
 	}
 
@@ -625,13 +631,13 @@ parse_story_file(const char* filepath, char* start_chapter){
 			create_data_group(f, story);
 			continue;
 		case '&':
-			add_dg_alias(f, story);
+			add_dg_alias(f, &prd);
 			continue;
 		case '[':
-			parse_nexus(f, story);
+			parse_nexus(f, &prd, story);
 			continue;
 		case '(':
-			parse_sv_changes(f, &option_conds, ")");
+			parse_sv_changes(f, &prd, &option_conds, ")");
 			continue;
 		case '{':
 			parse_option(f, story, &prd, &option_conds);

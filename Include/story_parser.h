@@ -36,6 +36,7 @@ struct parse_rundata {
 	txtr_info paragraph;
 	txtr_info option;
 	glyph_styling glyph;
+	std::unordered_map<struct zstring, struct zstring, string_hash> dg_aliases;
 	std::unordered_map<struct zstring, struct zstring, string_hash> markers;
 };
 
@@ -74,7 +75,6 @@ struct story {
 	vector<glyph> used_glyphs;
 	struct zstring location;
 	story_vars data_groups;
-	std::unordered_map<struct zstring, struct zstring, string_hash> dg_aliases;
 };
 
 struct story* parse_story_file(const char* filepath, char* start_chapter);
