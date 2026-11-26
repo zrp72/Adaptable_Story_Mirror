@@ -88,13 +88,6 @@ free_string(struct zstring* s){
 	free(s->text);
 }
 
-struct zstring
-duplicate_string(struct zstring* o){
-	struct zstring n = *o;
-	n.text = strdup(o->text);
-	return n;
-}
-
 void
 trim_tw(struct zstring* s){
 	while( isspace(s->text[s->len-1]) ){
@@ -130,6 +123,13 @@ dynamic_sappend(struct zstring* s, const char* src, int i, int l){
 		dynamic_append(s, src[i]);
 		i += 1;
 	}
+}
+
+struct zstring
+duplicate_string(struct zstring* o){
+	struct zstring n = get_string(o->cap);
+	dynamic_mappend(&n, o->text);
+	return n;
 }
 
 int randomize_number(int range){

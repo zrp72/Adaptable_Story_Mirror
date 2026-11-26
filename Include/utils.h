@@ -62,12 +62,12 @@ struct char_ptr_equal {
 void init_string(struct zstring*, size_t cap);
 struct zstring get_string(size_t cap);
 void free_string(struct zstring*);
-struct zstring duplicate_string(struct zstring*);
 void trim_tw(struct zstring*);
 void clear_string(struct zstring*);
 void dynamic_append(struct zstring*, char);
 void dynamic_mappend(struct zstring*, const char*);
 void dynamic_sappend(struct zstring*, const char*, int, int);
+struct zstring duplicate_string(struct zstring*);
 
 std::string lowercase_string(std::string);
 std::string trim_string(std::string);
