@@ -127,8 +127,12 @@ render_element(UI_element& obj, gui_core& gui, assets& assets){
 		SDL_RectToFRect(&t.dstrect.SDL_rect, &dstrect);
 		dstrect.y -= obj.scroll_y;
 
-		SDL_Texture* texture = assets.textures[t.texture_ID];
-		SDL_RenderTexture(gui.renderer, texture, &srcrect, &dstrect);
+		if(t.texture_ID.empty()){
+			render_debug_hitbox(gui, t.dstrect.SDL_rect, 255, 255, 255, 255);
+		} else {
+			SDL_Texture* texture = assets.textures[t.texture_ID];
+			SDL_RenderTexture(gui.renderer, texture, &srcrect, &dstrect);
+		}
 	}
 
 	for(auto &t : obj.text){
@@ -183,7 +187,7 @@ create_story_display(gui_core& gui, assets& assets, struct story& story){
 	if(!location->txtr_data.border.empty()){
 		auto& border = location->txtr_data.border;
 		if(assets.textures.contains(border)){
-			fprintf(stderr, "Attempted to use unloaded texture: %s\n", border.c_str());
+			fprintf(stderr, "Attempted to use unloaded texture(%s)\n", border.c_str());
 			exit(1);
 		}
 
@@ -245,9 +249,15 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 		{
 
 		auto& border = option->txtr_data.border;
-		if(main_assets.textures.contains(border)){
-			fprintf(stderr, "Attempted to use unloaded texture: %s\n", border.c_str());
-			exit(1);
+		SDL_Rect srcrect;
+		if(border.empty()){
+			srcrect = {0, 0, 0, 0};
+		} else {
+			if(main_assets.textures.contains(border)){
+				fprintf(stderr, "Attempted to use unloaded texture(%s)\n", border.c_str());
+				exit(1);
+			}
+			srcrect = main_assets.get_texture_srcrect(border);
 		}
 
 		for(auto& t : option->prompt){
@@ -268,7 +278,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 
 		element.texture.push_back(relative_texture(
 			border,
-			main_assets.get_texture_srcrect(border),
+			srcrect,
 			relative_rect(x_pos -.05, y_pos, .4, .05),
 			[=](struct story& data, assets& assets, gui_core& gui){
 				progress_story(data, assets, gui, iteration);
