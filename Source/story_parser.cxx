@@ -496,7 +496,7 @@ parse_option(
 ){
 	struct option* o = get_option(conds, &prd->option);
 	o->reveal_conds = *conds;
-	o->txtr_data = *prd->option;
+	o->txtr_data = prd->option;
 
 	struct zstring base = get_string(8);
 	trim_tw(&base);
