@@ -86,6 +86,7 @@ class glyphtext {
 	};
 
 	std::vector<glyph> glyphs;
+	int alignment = GLYPHTEXT_ALIGN_LEFT;
 	//Words is the whitespace terminated version of glyphs
 	//used for layout so that words aren't split between lines
 	std::vector<word> words;
