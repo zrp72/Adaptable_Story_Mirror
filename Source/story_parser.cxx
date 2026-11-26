@@ -485,6 +485,7 @@ fread_glyphtext(
 struct option*
 get_option(sv_changes* rc, txtr_info* ti){
 	struct option* o = new option();
+	o->dst_label = get_string(8);
 	o->reveal_conds = *rc;
 	o->txtr_data = *ti;
 	return o;
@@ -498,6 +499,7 @@ parse_option(
 	struct option* o = get_option(conds, &prd->option);
 
 	struct zstring base = get_string(8);
+	trim_tw(&base);
 	fmove_pw(f);
 	if( '}' == gfss_tsc(f, &base, ":}") ){
 		fprintf(stderr, "No destination found for option on paragraph \"%s\".\n", base.text);
@@ -505,11 +507,8 @@ parse_option(
 	}
 
 	fmove_pw(f);
-	struct zstring dst = get_string(8);
-	gfss_tsc(f, &dst, "}");
-
-	trim_tw(&base);
-	trim_tw(&dst);
+	gfss_tsc(f, &o->dst_label, "}");
+	trim_tw(&o->dst_label);
 
 	if( '(' == fmove_pw(f) ){
 		(void)tfgetc(f);
@@ -574,7 +573,7 @@ parse_paragraph(
 	}
 
 	printf("Defined paragraph \"%s\"\n", name.text);
-	s->tag_map[name] = p;
+	s->tag_map[name] = (void*)p;
 }
 
 void
