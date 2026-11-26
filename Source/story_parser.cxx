@@ -486,8 +486,6 @@ struct option*
 get_option(sv_changes* rc, txtr_info* ti){
 	struct option* o = new option();
 	o->dst_label = get_string(8);
-	o->reveal_conds = *rc;
-	o->txtr_data = *ti;
 	return o;
 }
 
@@ -497,6 +495,8 @@ parse_option(
 	struct parse_rundata* prd, sv_changes* conds
 ){
 	struct option* o = get_option(conds, &prd->option);
+	o->reveal_conds = *conds;
+	o->txtr_data = *prd->option;
 
 	struct zstring base = get_string(8);
 	trim_tw(&base);
