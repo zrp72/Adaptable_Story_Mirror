@@ -260,7 +260,7 @@ create_option_display(gui_core& gui, assets& main_assets, struct story& story){
 			srcrect = main_assets.get_texture_srcrect(border);
 		}
 
-		for(auto& t : option->prompt){
+		for(auto& t : option->prompt.glyphs){
 			debug(char(t.unicode));
 		}
 		debug('\n');
