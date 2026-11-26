@@ -435,7 +435,7 @@ update_styling(struct parse_rundata* s, struct zstring* change){
 int
 fread_glyphtext(
 	tFILE* f,
-	vector<glyph>* cntr, struct parse_rundata s,
+	glyphtext* cntr, struct parse_rundata s,
 	const char* ends
 ){
 	//ALWAYS PLACE DOUBLE NEWLINE AT THE BEGINNING OF THE ENDS PARAMETER
@@ -465,11 +465,11 @@ fread_glyphtext(
 					i += 1
 			){
 				if(rv == 1){
-					cntr->resize(cntr->size() - marker.len);
+					cntr->glyphs.resize(cntr->glyphs.size() - marker.len);
 					if( 0 != strncmp(change.text, "nwln", 4) ){
 						update_styling(&s, &change);
 					} else {
-						cntr->push_back(glyph('\n', s.glyph));
+						cntr->glyphs.push_back(glyph('\n', s.glyph));
 					}
 					break;
 				}
@@ -478,7 +478,7 @@ fread_glyphtext(
 		glyph g;
 		g.unicode = c;
 		g.style = s.glyph;
-		cntr->push_back(g);
+		cntr->glyphs.push_back(g);
 	}
 	return c;
 }
@@ -518,8 +518,10 @@ parse_option(
 	}
 
 	fread_glyphtext(f, &o->prompt, *prd, "\n");
+	o->prompt.alignment = GLYPHTEXT_ALIGN_CENTER;
+
 	s->used_glyphs.insert(s->used_glyphs.end(),
-		o->prompt.begin(), o->prompt.end()
+		o->prompt.glyphs.begin(), o->prompt.glyphs.end()
 	);
 
 	if( s->tag_map.contains(base) ){
@@ -564,8 +566,10 @@ parse_paragraph(
 	}
 
 	fread_glyphtext(f, &p->text, *prd, "\n\n");
+	p->text.alignment = GLYPHTEXT_ALIGN_JUSTIFY;
+
 	s->used_glyphs.insert(s->used_glyphs.end(),
-		p->text.begin(), p->text.end()
+		p->text.glyphs.begin(), p->text.glyphs.end()
 	);
 
 	if(s->tag_map.contains(name)){

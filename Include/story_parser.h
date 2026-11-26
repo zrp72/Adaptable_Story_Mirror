@@ -40,7 +40,7 @@ struct parse_rundata {
 };
 
 struct option {
-	vector<glyph> prompt;
+	glyphtext prompt;
 	struct zstring dst_label;
 	sv_changes reveal_conds;
 	sv_changes changes;
@@ -50,7 +50,7 @@ struct option {
 struct paragraph {
 	LCTN_T t;
 
-	vector<glyph> text;
+	glyphtext text;
 	sv_changes changes;
 	vector<struct option*> options;
 	txtr_info txtr_data;
