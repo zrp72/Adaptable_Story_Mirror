@@ -136,11 +136,11 @@ progress_story(struct story &story, assets& main_assets, gui_core& gui, int choi
 
 		debug("Dest label: " << c->dst_label.text << '\n');
 		struct zstring& dst = c->dst_label;
-		struct nexus* n = (struct nexus*)tag_map[dst];
+		LCTN_T type = *static_cast<LCTN_T*>(tag_map[dst]);
 
-		while(n->t == NXS){
+		while(type == NXS){
 			dst = get_destination(story, dst);
-			n = (struct nexus*)tag_map[dst];
+			type = *static_cast<LCTN_T*>(tag_map[dst]);
 		}
 		struct paragraph* p = (struct paragraph*)tag_map[dst];
 
