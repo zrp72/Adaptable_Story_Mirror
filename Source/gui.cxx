@@ -92,7 +92,7 @@ resize_element(UI_element &obj, gui_core& gui, assets& assets){
 		resize_rect(text.mask, gui.window);
 		resize_rect(text.pos, gui.window);
 		text.text.refresh_layout(assets.glyphs, text.pos.SDL_rect.w, 
-			GLYPHTEXT_ALIGN_JUSTIFY);
+			text.text.alignment);
 
 		int max_scroll = text.text.height - text.mask.SDL_rect.h;
 		max_scroll = std::max(0, max_scroll);
