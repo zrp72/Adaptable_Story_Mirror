@@ -62,41 +62,36 @@ packing_grid::packing_grid(size_t w, size_t h):width(w), height(h){
 //Returns an xy pixel location for where the object can fit from its top left corner.
 //Padding should always be an even number.
 //If no position is found, the returned point will be -1, -1
-std::pair<int, int> packing_grid::find_space(int w, int h, int padding){
-	//TODO: fix, current complexity of this function is something like O(n^2), but it works
-	//Dont enable debugs
-	for(int x = 0; x < width; x++){
-		for(int y = 0; y < height; y++){
-			//debug("Checking for space at point (" << x << ',' << y << ")\n");
-			if(pixels.at(x).at(y)){
+std::pair<int, int>
+packing_grid::find_space(int w, int h, int padding){
+	while(this->x + w + padding < this->width){
+		while(this->y + h + padding < this->height){
+			if( pixels.at(x).at(y) ){
+				y += 1;
+				continue;
+			}
+			if( pixels.at(x).at(y + h + padding) ){
+				y += h + padding + 1;
 				continue;
 			}
 
-			bool viable = true;
-			for(int px = 0; px < (w + padding); px++){
-				if(x + px > width - 1){
-					viable = false;
-					break;
-				}
-				for(int py = 0; py < (h + padding); py++){
-					//debug("Checking viability of point (" << x << ',' << y << ") at pen (" << px << ',' << py << ")\n");
-					if(y + py > height - 1){
-						viable = false;
-						break;
-					}
-					if(pixels.at(x + px).at(y + py)){
-						viable = false;
-						break;
-					}
-				}
-				if(!viable){
-					break;
-				}
+			bool collision = false;
+			int py = 1;
+			while( py < h + padding ){
+				collision = pixels.at(x).at(y + py);
+				if(collision){ break; }
+				py += 1;
 			}
-			if(viable){
-				return {x + (padding / 2), y + (padding / 2)};
+			if(collision){
+				y += py + 1;
+				continue;
 			}
+
+			y += h + padding;
+			return {x + (padding / 2), y + (padding / 2)};
 		}
+		y = 0;
+		x += 1;
 	}
 	return {-1, -1};
 }

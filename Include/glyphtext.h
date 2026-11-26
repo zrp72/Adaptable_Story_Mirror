@@ -106,6 +106,8 @@ class packing_grid {
 	size_t width = 0;
 	size_t height = 0;
 	std::vector<std::vector<bool>> pixels;
+	int x = 0;
+	int y = 0;
 
 	//Takes width and height to create a vector<vector<bool>>(a grid of pixels either available or used)
 	packing_grid(size_t, size_t);
