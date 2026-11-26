@@ -172,27 +172,30 @@ create_story_display(gui_core& gui, assets& assets, struct story& story){
 		fprintf(stderr, "Location set to nexus \"%s\"\n", story.location.text);
 		exit(1);
 	}
-	auto& story_text = location->text;
-	auto& border = location->txtr_data.border;
-	if(assets.textures.contains(border)){
-		fprintf(stderr, "Attempted to use unloaded texture: %s\n", border.c_str());
-		exit(1);
-	}
 
+	auto& story_text = location->text;
 	element.text.push_back(relative_text(
 		story_text,
 		relative_rect(.15, .1, .7, .5),
 		relative_rect(.15, .1, .7)
 	));
 
-	/* TODO: Implement paragraph borders
-	element.texture.push_back(relative_texture(
-		border,
-		assets.get_texture_srcrect(border),
-		relative_rect(x_pos -.05, y_pos, .4, .05),
-		[=](struct story& data, assets& assets, gui_core& gui){}
-	));
-	*/
+	if(!location->txtr_data.border.empty()){
+		auto& border = location->txtr_data.border;
+		if(assets.textures.contains(border)){
+			fprintf(stderr, "Attempted to use unloaded texture: %s\n", border.c_str());
+			exit(1);
+		}
+
+		/* TODO: Implement paragraph borders
+		element.texture.push_back(relative_texture(
+			border,
+			assets.get_texture_srcrect(border),
+			relative_rect(x_pos -.05, y_pos, .4, .05),
+			[=](struct story& data, assets& assets, gui_core& gui){}
+		));
+		*/
+	}
 
 	for(auto& g : element.text[0].text.glyphs){
 		debug(char(g.unicode));
