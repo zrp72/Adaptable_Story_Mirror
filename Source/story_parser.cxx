@@ -219,7 +219,7 @@ check_default(tFILE* f){
 	const char* d = "default";	
 	char buffer[8] = {0};
 	int i = 0;
-	while( (buffer[i] = tfgetc(f)) == d[i] ){
+	while( i < 7 && (buffer[i] = tfgetc(f)) == d[i] ){
 		i += 1;
 	}
 
@@ -300,6 +300,7 @@ parse_ext_grp(tFILE* f, struct exit_group* eg){
 	struct zstring e = get_string(8);
 	while('\n' != fmove_pw_sl(f)){
 		int c = gfss_tsc(f, &e, "\n]");
+		trim_tw(&e);
 		if(e.len > 0){
 			struct zstring exit = duplicate_string(&e);
 			eg->exits.push_back(exit);
@@ -331,9 +332,10 @@ parse_nexus(tFILE* f, parse_rundata* prd, story* s){
 
 	int c;
 	struct exit_group eg = get_ext_grp();
-	while(']' != (c = fmove_pw(f)) && c != EOF &&
-		']' != parse_sv_changes(f, prd, &eg.conds, ":]")
-	){
+	while( EOF != (c = fmove_pw(f)) ){
+		if(c == ']'){ break; }
+		if(']' == parse_sv_changes(f, prd, &eg.conds, ":]")){ break; }
+
 		fmove_pw(f);
 		parse_ext_grp(f, &eg);
 		nxs->exits.push_back(eg);
