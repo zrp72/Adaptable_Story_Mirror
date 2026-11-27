@@ -47,9 +47,10 @@ get_destination(story &story, struct zstring &l){
 				if( !data.contains(dc.dg) ){
 					fprintf(stderr, "Attempted to compare against nonexistant data group \"%s\"\n", dc.dg.text);
 				} else if( !data[dc.dg].contains(dc.var) ){
-					continue;
+					viable = false;
+				} else {
+					viable = compare_sv(dc.val, dc.op, data[dc.dg][dc.var]);
 				}
-				viable = compare_sv(dc.val, dc.op, data[dc.dg][dc.var]);
 			}
 			if(!viable){
 				break;
