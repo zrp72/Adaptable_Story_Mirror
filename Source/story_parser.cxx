@@ -542,6 +542,7 @@ parse_option(
 
 	struct paragraph* p = (struct paragraph*)s->tag_map[base];
 	p->options.push_back(o);
+	free_string(&base);
 }
 
 void
