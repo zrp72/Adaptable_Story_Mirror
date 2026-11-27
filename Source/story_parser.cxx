@@ -331,7 +331,7 @@ parse_nexus(tFILE* f, parse_rundata* prd, story* s){
 
 	int c;
 	struct exit_group eg = get_ext_grp();
-	while(']' != (c = fmove_pw(f)) && c != '\0' &&
+	while(']' != (c = fmove_pw(f)) && c != EOF &&
 		']' != parse_sv_changes(f, prd, &eg.conds, ":]")
 	){
 		fmove_pw(f);
