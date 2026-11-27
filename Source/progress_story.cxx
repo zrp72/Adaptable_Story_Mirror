@@ -18,7 +18,7 @@ compare_sv(int val1, int op, int val2){
 	case '<':
 		return val1 < val2;
 	case '=':
-		return val1 = val2;
+		return val1 == val2;
 	}
 	fprintf(stderr, "Invalid comparison operator \"%c\"\n", op);
 	exit(1);
@@ -90,10 +90,10 @@ apply_changes(struct story &story, sv_changes& changes){
 			story.data_groups[c.dg][c.var] = c.val;
 			continue;
 		case '+':
-			story.data_groups[c.dg][c.var] + c.val;
+			story.data_groups[c.dg][c.var] += c.val;
 			continue;
 		case '-':
-			story.data_groups[c.dg][c.var] - c.val;
+			story.data_groups[c.dg][c.var] -= c.val;
 			continue;
 		default:
 			fprintf(stderr, "Invalid change operator on change \"<%s>%s%c%d\"\n", c.dg.text, c.var.text, c.op, c.val);
